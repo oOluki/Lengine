@@ -1,0 +1,2 @@
+available in: https://github.com/expo/google-fonts
+repository committed by: Charlie Cheever (ccheever), Aman Mittal (amandeepmittal), Cedric van Putten (byCedric), Edson Junior (edsonjuniornarvaes), Evan Bacon (EvanBacon), dan (danstepanov).

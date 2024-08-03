@@ -1,0 +1,13 @@
+#pragma once
+#include <iostream>
+#include <map>
+#include <vector>
+#include <chrono>
+#include <math.h>
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
