@@ -1,16 +1,43 @@
 #ifdef LE_ENVIRONMENT_C
-// This file should only be included once and in main.c
+// This file should only be included once and in Lengine.c
 #error [INTERNAL ERROR] Attempt To Include 'environment.c', aka 'environment implementation', more than once. This file should only be really included once in main.c
 #endif
 
 #define LE_ENVIRONMENT_C
 
+#if defined(__linux__) || defined(__APPLE__)
+
+#include <dlfcn.h>
+
+#define HANDLE void*
+#define LE_OPENLIB(PATH) dlopen(PATH, RTLD_NOW)
+#define LE_GETSYM(HANDLE, SYM) dlsym(HANDLE, SYM)
+#define LE_CLOSELIB(HANDLE) dlclose(HANDLE)
+
+#elif defined(_WIN32)
+
+#include <windows.h>
+
+#define LE_HANDLE HINSTANCE
+#define LE_OPENLIB(PATH) LoadLibrary(PATH)
+#define LE_GETSYM(HANDLE, SYM) GetProcAddress(HANDLE, SYM)
+#define LE_CLOSELIB(HANDLE) FreeLibrary(HANDLE)
+
+#else
+
+#error Unsupported OS, Lengine Has No Support For Your Operating System. \
+Supported OS Should Be: Windows, Linux And Mac, \
+If You Got This Error In One Of This OS It Means Lengine Has Internal Problems.
+
+#endif
+
+
 #include "environment.h"
 
 #include <stdbool.h>
-#include "stdio.h"
-#include "stdlib.h"
-#include "dlfcn.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -78,27 +105,33 @@ int get_active_subsystems(){
 int load_plugin(Plugin* plugin, const char* path){
 
     printf("[INFO] Loading '%s' To Plugin At %p\n", path, plugin);
-    void* handle = dlopen(path, RTLD_NOW);
+    HANDLE handle = LE_OPENLIB(path);
+
+    #if defined(__linux__) || defined(__APPLE__)
+
     if(!handle){
         printf("[ERROR] %s\n", dlerror());
         return 0;
     }
-    plugin->init = dlsym(handle, "plugin_init");
+
+    #endif
+
+    plugin->init = LE_GETSYM(handle, "plugin_init");
     if(!plugin->init){
         printf("[ERROR] Missing Symbol \'plugin_init\' In Plugin \'%s\'.\n"
         "All Plugins Should Define A Method \'void plugin_init(Env*)\'.\n", path);
-        dlclose(handle);
+        LE_CLOSELIB(handle);
         return 0;
     }
-    plugin->update = dlsym(handle, "plugin_update");
+    plugin->update = LE_GETSYM(handle, "plugin_update");
     if(!plugin->update){
         printf("[ERROR] Missing Symbol \'plugin_update\' In Plugin \'%s\'.\n"
         "All Plugins Should Define A Method \'bool plugin_update()\'.\n", path);
         plugin->init = NULL;
-        dlclose(handle);
+        LE_CLOSELIB(handle);
         return 0;
     }
-    plugin->retrieve_state = (void(*)(void*))dlsym(handle, "plugin_retrieve_state");
+    plugin->retrieve_state = (void(*)(void*))LE_GETSYM(handle, "plugin_retrieve_state");
     if(!plugin->retrieve_state){
         printf("[WARNING] No Symbol \'plugin_retrieve_state\' In Plugin \'%s\'.\n"
         "Plugins Can't Hot Reload Withod A Method \'void plugin_retrieve_state(void*)\'.\n", path);
@@ -108,7 +141,7 @@ int load_plugin(Plugin* plugin, const char* path){
 }
 
 void unload_plugin(Plugin* plugin){
-    dlclose(plugin->handle);
+    LE_CLOSELIB(plugin->handle);
     *plugin = (Plugin){};
 }
 

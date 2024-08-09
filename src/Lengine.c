@@ -91,7 +91,7 @@ int main(int argc, char** argv){
             new_path[str_size] = '\0';
             if(dummy) memcpy(new_path, dummy, (str_size) * sizeof(char));
 
-            dlclose(reload_request->handle);
+            LE_CLOSELIB(reload_request->handle);
 
             if(!load_plugin(reload_request, dummy? new_path : path_to_plugin)){
                 *reload_request = (Plugin) {};
