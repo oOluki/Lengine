@@ -102,58 +102,6 @@ SDL_SetRenderDrawColor(_Renderer, red, green, blue, alpha);
 SDL_RenderDrawLines(_Renderer, points, number_of_points);
 }
 
-// Draws circle arc defined by a range of two angles using SDL2_gfx implementation (very fast)
-void DrawHollowCircle(int centerX, int centerY, int radius, int start_angle, int finish_angle, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    arcRGBA(_Renderer, centerX, centerY, radius, start_angle, finish_angle, red, green, blue, alpha);
-
-}
-
-// Draws filled circle using SDL2_gfx implementation (fast)
-void DrawFilledCircle(int centerX, int centerY, int radius, int red, int green, int blue,
-int alpha, SDL_Texture* texture) {
-    SDL_SetRenderTarget(_Renderer, texture);
-    filledCircleRGBA(_Renderer, centerX, centerY, radius, red, green, blue, alpha);
-}
-
-// Draws a section of a filled circle / pie
-void DrawPie(int centerX, int centerY, int radius, int start_angle, int finish_anlgle, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    filledPieRGBA(_Renderer, centerX, centerY, radius, start_angle, finish_anlgle, red, green, blue, alpha);
-}
-
-void DrawHollowEllipse(int centerX, int centerY, int radius1, int radius2, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    ellipseRGBA(_Renderer, centerX, centerY, radius1, radius2, red, green, blue, alpha);
-}
-
-void DrawFilledEllipse(int centerX, int centerY, int radius1, int radius2, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    filledEllipseRGBA(_Renderer, centerX, centerY, radius1, radius2, red, green, blue, alpha);
-}
-
-void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    filledTrigonRGBA(_Renderer, x1, y1, x2, y2, x3, y3, red, green, blue, alpha);
-}
-
-void DrawHollowPolygon(const Sint16* xs, const Sint16* ys, int number_of_points, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    polygonRGBA(_Renderer, xs, ys, number_of_points, red, green, blue, alpha);
-}
-
-void DrawFilledPolygon(const Sint16* xs, const Sint16* ys, int number_of_points, int red, int green, int blue,
-int alpha, SDL_Texture* texture){
-    SDL_SetRenderTarget(_Renderer, texture);
-    filledPolygonRGBA(_Renderer, xs, ys, number_of_points, red, green, blue, alpha);
-}
-
 void DrawTexture(SDL_Texture* source_texture, SDL_Rect* source, SDL_Rect* destiny,
  SDL_Texture* destiny_texture)
 {
@@ -226,49 +174,6 @@ void DrawLines(const SDL_Point* points, int number_of_points, int red, int green
 int blue, int alpha = 255){
 SDL_SetRenderDrawColor(_Renderer, red, green, blue, alpha);
 SDL_RenderDrawLines(_Renderer, points, number_of_points);
-}
-
-// Draws circle arc defined by a range of two angles using SDL2_gfx implementation (very fast)
-void DrawHollowCircle(int centerX, int centerY, int radius, int start_angle, int finish_angle, int red, int green, int blue,
-int alpha = 255){
-    arcRGBA(_Renderer, centerX, centerY, radius, start_angle, finish_angle, red, green, blue, alpha);
-}
-
-// Draws filled circle using SDL2_gfx implementation (fast)
-void DrawFilledCircle(int centerX, int centerY, int radius, int red, int green, int blue,
-int alpha = 255) {
-    filledCircleRGBA(_Renderer, centerX, centerY, radius, red, green, blue, alpha);
-}
-
-// Draws a section of a filled circle / pie
-void DrawPie(int centerX, int centerY, int radius, int start_angle, int finish_anlgle, int red, int green, int blue,
-int alpha = 255){
-    filledPieRGBA(_Renderer, centerX, centerY, radius, start_angle, finish_anlgle, red, green, blue, alpha);
-}
-
-void DrawHollowEllipse(int centerX, int centerY, int radius1, int radius2, int red, int green, int blue,
-int alpha = 255){
-    ellipseRGBA(_Renderer, centerX, centerY, radius1, radius2, red, green, blue, alpha);
-}
-
-void DrawFilledEllipse(int centerX, int centerY, int radius1, int radius2, int red, int green, int blue,
-int alpha = 255){
-    filledEllipseRGBA(_Renderer, centerX, centerY, radius1, radius2, red, green, blue, alpha);
-}
-
-void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int red, int green, int blue,
-int alpha = 255){
-    filledTrigonRGBA(_Renderer, x1, y1, x2, y2, x3, y3, red, green, blue, alpha);
-}
-
-void DrawHollowPolygon(const Sint16* xs, const Sint16* ys, int number_of_points, int red, int green, int blue,
-int alpha = 255){
-    polygonRGBA(_Renderer, xs, ys, number_of_points, red, green, blue, alpha);
-}
-
-void DrawFilledPolygon(const Sint16* xs, const Sint16* ys, int number_of_points, int red, int green, int blue,
-int alpha = 255){
-    filledPolygonRGBA(_Renderer, xs, ys, number_of_points, red, green, blue, alpha);
 }
 
 void DrawTexture(SDL_Texture* source_texture, SDL_Rect* source = nullptr, SDL_Rect* destiny = nullptr)
