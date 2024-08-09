@@ -156,7 +156,6 @@ static inline bool handle_map_events(Plugin* plugin){
         switch (event.type)
         {
         case SDL_QUIT:
-            plugin->flags = PLUGIN_QUIT;
             clean_memory();
             return false;
 
@@ -166,9 +165,9 @@ static inline bool handle_map_events(Plugin* plugin){
             case SDLK_r:{
                 MapDesigner* state = (MapDesigner*)malloc(sizeof(MapDesigner));
                 *state = map_designer;
-                plugin->flags = PLUGIN_HOT_RELOAD;
                 plugin->state = (void*)state;
-                return false;
+                map_designer.env->overwrite_plugin(plugin, NULL);
+                break;
             }
             case SDLK_c:
                 if(map_designer.flags & MDF_CTRL)

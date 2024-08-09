@@ -34,7 +34,7 @@ PluginState plugin;
 
 void plugin_init(Env* env){
     printf("[INFO] Plugin: Hi From Plugin At %p\n", &event);
-    printf("[INFO] Plugin: Initiation Of Plugin Requested From %p\n", env);
+    printf("[INFO]- Plugin: Initiation Of Plugin Requested From %p\n", env);
 
     environment = env;
     EnvSubSysFlags flags;
@@ -101,11 +101,7 @@ bool plugin_update(Plugin* self){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    draw_thick_rect(plugin.rect, (SDL_Color){159, 25, 69, 255}, 5);
-
-    SDL_SetRenderDrawColor(renderer, 20, 159, 15, 255);
-
-    SDL_RenderDrawPoint(renderer, mousex, mousey);
+    draw_thick_rect(plugin.rect, (SDL_Color){159, 5, 69, 255}, 5);
 
     SDL_SetRenderTarget(renderer, NULL);
     SDL_RenderCopy(renderer, draw_texture, NULL, NULL);
@@ -115,7 +111,6 @@ bool plugin_update(Plugin* self){
     while (SDL_PollEvent(&event)){
         if(event.type == SDL_QUIT){
             quit();
-            self->flags = PLUGIN_QUIT;
             return false;
         }
         if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED){
@@ -124,11 +119,9 @@ bool plugin_update(Plugin* self){
         }
         if(event.type == SDL_KEYDOWN){
             if(event.key.keysym.sym == SDLK_r){
-                void* state = malloc(sizeof(PluginState));
-                *(PluginState*)state = plugin;
-                self->state = (void*)(state);
-                self->flags |= PLUGIN_HOT_RELOAD;
-                return false;
+                self->state = malloc(sizeof(PluginState));
+                *(PluginState*)self->state = plugin;
+                plugin.env->overwrite_plugin(self, "../plugins/plugin.so");
             }
             if(event.key.keysym.sym == SDLK_c){
                 if(system("gcc -fPIC -shared plugins/plugin.c -o plugins/plugin.so")){
@@ -153,7 +146,7 @@ bool plugin_update(Plugin* self){
 }
 
 void plugin_retrieve_state(void* plugin_state){
-    printf("getting state from %p to %p\n", plugin_state, &plugin);
+    printf("[INFO] getting state from %p to %p\n", plugin_state, &plugin);
     plugin = *(PluginState*)plugin_state;
     free(plugin_state);
     environment = plugin.env;

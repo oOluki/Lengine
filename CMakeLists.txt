@@ -7,6 +7,13 @@ set(SOURCE_FILES
     src/Lengine.c
 )
 
+add_library(simple_example SHARED
+    plugins/plugin.c
+)
+
+add_library(map_designer SHARED
+    plugins/map\ designer/map_designer.c
+)
 
 
 find_package(PkgConfig REQUIRED)

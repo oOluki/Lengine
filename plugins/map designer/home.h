@@ -252,7 +252,6 @@ static inline bool handle_home_events(Plugin* plugin){
         switch (event.type)
         {
         case SDL_QUIT:
-            plugin->flags = PLUGIN_QUIT;
             clean_memory();
             return false;
         case SDL_KEYDOWN:
@@ -337,9 +336,8 @@ static inline bool handle_home_events(Plugin* plugin){
                 MapDesigner* md_state = (MapDesigner*)malloc(sizeof(MapDesigner));
                 *md_state = map_designer;
                 plugin->state = (void*)md_state;
-                plugin->flags = PLUGIN_HOT_RELOAD;
-                printf("[INFO] plugin %p flag %i\n[INFO] window %p renderer %p\n", plugin, plugin->flags, map_designer.window, map_designer.renderer);
-                return false;
+                map_designer.env->overwrite_plugin(plugin, NULL);
+                break;
             }
             case SDLK_c:
                 if(map_designer.flags & MDF_CTRL){

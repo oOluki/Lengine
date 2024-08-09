@@ -36,12 +36,13 @@ void print_help_message(){
         "\n[HELP] void plugin_retrieve_state(void*):\n"
         "\tUsed for hot reloading, if a plugin doesn't want/need hot reloading simply don't define this method in it "
         "(in which case the Lengine aplication will simply start the plugin using plugin_init())."
-        "This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve"
-        "its previos state from before closing when the Plugin object's flags is set to PLUGIN_HOT_RELOAD. The state that is passed to "
+        "This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve "
+        "its previos state from before closing when the environment's int overwrite_plugin(Plugin*, const char*) method is called. The state that is passed to "
         "this function is the one in the Plugin object's state\n"
     );
     printf("\n[INFO] End Of Lengine Help Message\n");
 }
+
 
 int main(int argc, char** argv){
 
@@ -54,23 +55,20 @@ int main(int argc, char** argv){
         return EXIT_FAILURE;
     }
     
-    const char* path_to_plugin = argv[1];
-
-    Channel channel = (Channel){
-        .channel = NULL,
-        .size = 0,
-        .active = false
-    };
-
+    const char* path_to_plugin =  argv[1];
     
     Env env = (Env){
-        .channel = &channel,
+        .channel = (Channel){.channel = NULL, .size = 0, .active = false},
         .init_subsystem = init_subsystem,
         .close_subsystem = close_subsystem,
-        .get_active_subsystems = get_active_subsystems
+        .get_active_subsystems = get_active_subsystems,
+        .load_plugin = load_plugin,
+        .unload_plugin = unload_plugin,
+        .overwrite_plugin = overwrite_plugin  
     };
 
     Plugin plugin;
+    plugin.environment = &env;
 
     if(!load_plugin(&plugin, path_to_plugin)){
         printf("[ERROR] Unable To Load Plugin \'%s\'\n", path_to_plugin);
@@ -78,49 +76,48 @@ int main(int argc, char** argv){
         return EXIT_FAILURE;
     }
 
-    Plugin* const plugin_address = &plugin;
-
-    printf("[INFO] Plugin At %p\n", plugin_address);
+    printf("[INFO] Plugin At %p\n", &plugin);
 
     ((void(*)(Env*))plugin.init)(&env);
 
-    plugin.flags = PLUGIN_ACTIVE;
+    while(((bool(*)(Plugin*))plugin.update)(&plugin)){
+        if(reload_request){
+            printf("[INFO] Overwritting Plugin At %p With '%s'\n", reload_request, new_path? new_path : path_to_plugin);
+            
+            int str_size = 0;
+            for(; new_path && new_path[str_size]; str_size += 1);
+            const char* dummy = new_path;
+            new_path = (char*)alloca((str_size + 1) * sizeof(char));
+            new_path[str_size] = '\0';
+            if(dummy) memcpy(new_path, dummy, (str_size) * sizeof(char));
 
-    while(plugin.flags == PLUGIN_ACTIVE){
-        if(((bool(*)(Plugin*))plugin.update)(plugin_address) == false){
-            switch (plugin.flags)
-            {
-            case PLUGIN_QUIT:
-                unload_plugin(plugin_address);
-                return EXIT_SUCCESS;
-                break;
-            case PLUGIN_HOT_RELOAD:
-                printf("[INFO] Hot Reloading\n");
-                void* plugin_state = plugin.state;
-                unload_plugin(plugin_address);
-                if(!load_plugin(plugin_address, path_to_plugin)){
-                    printf("[ERROR] Unable To Load Plugin \'%s\'\n", path_to_plugin);
+            dlclose(reload_request->handle);
+
+            if(!load_plugin(reload_request, dummy? new_path : path_to_plugin)){
+                *reload_request = (Plugin) {};
+                printf("[WARNING] Unable To Overwrite Plugin With '%s'\n", dummy? new_path : path_to_plugin);
+                printf("[WARNING] Plugin At %p Holds Invalid Methods\n", reload_request);
+                if(reload_request = &plugin){
+                    printf("[ERROR] Fatal Error Main Plugin Compromised\n");
                     return EXIT_FAILURE;
                 }
-                if(plugin.retrieve_state){
-                    plugin.retrieve_state(plugin_state);
-                } else{
-                    printf("[WARNING] Attempt To Hot Reload Plugin With No \'void retieve_state(void*)\' Definition, "
-                    "Reinicialization Will Take Place Instead");
-                    ((void(*)(Env*))plugin.init)(&env);
-                }
-                plugin.flags = PLUGIN_ACTIVE;
-                break;
-            
-            default:
-                printf("[ERROR] Invalid Plugin Flag \'%i\'\n", plugin.flags);
-                return EXIT_FAILURE;
-                break;
+                reload_request = NULL;
+                continue;
             }
+            if(reload_request->retrieve_state){
+                reload_request->retrieve_state(reload_request->state);
+            } else{
+                printf("[WARNING] Attempt To Reload Plugin, '%s', With No void plugin_retrieve_state(void*) Definition, "
+                "Reinitialization Will Take Place Instead\n", dummy? new_path : path_to_plugin);
+                ((void(*)(Env*))reload_request->init)((Env*)reload_request->environment);
+            }
+
+            printf("[INFO] Plugin Overwritten By '%s'\n", dummy? new_path : path_to_plugin);
+            reload_request = NULL;
         }
     }
 
-    
+    printf("[INFO] Lengine Shutdown\n"); 
 
     return EXIT_SUCCESS;    
 }

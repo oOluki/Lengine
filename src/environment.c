@@ -19,6 +19,9 @@
 
 int active_subsystems = ENV_NONE;
 
+char* new_path = NULL;
+Plugin* reload_request = NULL;
+
 int init_subsystem(int subsystems, EnvSubSysFlags flags){
     subsystems = (subsystems & (~active_subsystems));
     int out = 1;
@@ -72,9 +75,10 @@ int get_active_subsystems(){
     return active_subsystems;
 }
 
-int load_plugin(Plugin* plugin, const char* path_to_plugin){
+int load_plugin(Plugin* plugin, const char* path){
 
-    void* handle = dlopen(path_to_plugin, RTLD_NOW);
+    printf("[INFO] Loading '%s' To Plugin At %p\n", path, plugin);
+    void* handle = dlopen(path, RTLD_NOW);
     if(!handle){
         printf("[ERROR] %s\n", dlerror());
         return 0;
@@ -82,14 +86,14 @@ int load_plugin(Plugin* plugin, const char* path_to_plugin){
     plugin->init = dlsym(handle, "plugin_init");
     if(!plugin->init){
         printf("[ERROR] Missing Symbol \'plugin_init\' In Plugin \'%s\'.\n"
-        "All Plugins Should Define A Method \'void plugin_init(Env*)\'.\n", path_to_plugin);
+        "All Plugins Should Define A Method \'void plugin_init(Env*)\'.\n", path);
         dlclose(handle);
         return 0;
     }
     plugin->update = dlsym(handle, "plugin_update");
     if(!plugin->update){
         printf("[ERROR] Missing Symbol \'plugin_update\' In Plugin \'%s\'.\n"
-        "All Plugins Should Define A Method \'bool plugin_update()\'.\n", path_to_plugin);
+        "All Plugins Should Define A Method \'bool plugin_update()\'.\n", path);
         plugin->init = NULL;
         dlclose(handle);
         return 0;
@@ -97,7 +101,7 @@ int load_plugin(Plugin* plugin, const char* path_to_plugin){
     plugin->retrieve_state = (void(*)(void*))dlsym(handle, "plugin_retrieve_state");
     if(!plugin->retrieve_state){
         printf("[WARNING] No Symbol \'plugin_retrieve_state\' In Plugin \'%s\'.\n"
-        "Plugins Can't Hot Reload Withod A Method \'void plugin_retrieve_state(void*)\'.\n", path_to_plugin);
+        "Plugins Can't Hot Reload Withod A Method \'void plugin_retrieve_state(void*)\'.\n", path);
     }
     plugin->handle = handle;
     return 1;
@@ -108,8 +112,8 @@ void unload_plugin(Plugin* plugin){
     *plugin = (Plugin){};
 }
 
-void quit_plugin(Plugin* plugin){
-    unload_plugin(plugin);
-    plugin->flags = PLUGIN_NONE;
+void overwrite_plugin(Plugin* plugin, const char* path){
+    new_path = (char*)path;
+    reload_request = plugin;
 }
 
