@@ -9,7 +9,7 @@
 
 #include <dlfcn.h>
 
-#define HANDLE void*
+#define LE_HANDLE void*
 #define LE_OPENLIB(PATH) dlopen(PATH, RTLD_NOW)
 #define LE_GETSYM(HANDLE, SYM) dlsym(HANDLE, SYM)
 #define LE_CLOSELIB(HANDLE) dlclose(HANDLE)
@@ -105,7 +105,7 @@ int get_active_subsystems(){
 int load_plugin(Plugin* plugin, const char* path){
 
     printf("[INFO] Loading '%s' To Plugin At %p\n", path, plugin);
-    HANDLE handle = LE_OPENLIB(path);
+    LE_HANDLE handle = LE_OPENLIB(path);
 
     #if defined(__linux__) || defined(__APPLE__)
 
