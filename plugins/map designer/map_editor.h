@@ -48,7 +48,7 @@ static inline void draw_map(){
                     YOFFSET + (i - (int)(map_designer.scrolly / TILESIZEH)) * TILESIZEH - y_offset + 3,
                     TILESIZEW - 3, TILESIZEH - 3
                 };
-                if((tile < map_designer.number_of_tiles) && map_designer.tiles_sprite_sheet)
+                if((tile < map_designer.number_of_tiles + 1) && map_designer.tiles_sprite_sheet)
                     draw_tile(tile, dest);
                 else
                     SDL_RenderFillRect(map_designer.renderer, &dest);
