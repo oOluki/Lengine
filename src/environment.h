@@ -28,8 +28,9 @@ ENV_SDL =    1 << 1,
 ENV_IMAGE =  1 << 2,
 ENV_TTF =    1 << 3,
 ENV_MIXER =  1 << 4,
-ENV_OPGL =   1 << 5,
-ENV_VULKAN = 1 << 6
+ENV_GLFW =   1 << 5,
+ENV_OPGL =   1 << 6,
+ENV_VULKAN = 1 << 7
 } EnvFlags;
 
 

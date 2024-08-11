@@ -44,6 +44,9 @@ If You Got This Error In One Of This OS It Means Lengine Has Internal Problems.
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 int active_subsystems = ENV_NONE;
 
 char* new_path = NULL;
@@ -54,27 +57,39 @@ int init_subsystem(int subsystems, EnvSubSysFlags flags){
     int out = 1;
     if(subsystems & ENV_SDL){
         if(SDL_Init(flags.Env_sdl_flags)){
-            printf("[ERROR] Could Not Initiate SDL Subsytem");
+            printf("[ERROR] Could Not Initiate SDL Subsytem\n");
             out = 0;
         } else active_subsystems |= ENV_SDL;
     }
     if(subsystems & ENV_IMAGE){
         if(!IMG_Init(flags.Env_img_flags)){
-            printf("[ERROR] Could Not Initiate SDL_image Subsystem");
+            printf("[ERROR] Could Not Initiate SDL_image Subsystem\n");
             out = 0;
         } else active_subsystems |= ENV_IMAGE;
     }
     if(subsystems & ENV_TTF){
         if(TTF_Init()){
-            printf("[ERROR] Could Not Initiate SDL_ttf Subsytem");
+            printf("[ERROR] Could Not Initiate SDL_ttf Subsytem\n");
             out = 0;
         } else active_subsystems |= ENV_TTF;
     }
     if(subsystems & ENV_MIXER){
         if(!Mix_Init(flags.Env_mixer_flags)){
-            printf("[ERROR] Could Not Initiate SDL_mixer Subsystem");
+            printf("[ERROR] Could Not Initiate SDL_mixer Subsystem\n");
             out = 0;
         } else active_subsystems |= ENV_MIXER;
+    }
+    if(subsystems & ENV_GLFW){
+        if(glfwInit() == GLFW_FALSE){
+            printf("[ERROR] Could Not Initiate GLFW Subsystem\n");
+            out = 0;
+        } else active_subsystems |= ENV_GLFW;
+    }
+    if(subsystems & ENV_OPGL){
+        if(glewInit() != GLEW_OK){
+            printf("[ERROR] Could Not Initiate GLEW For OpenGL Subsystem\n");
+            out = 0;
+        } else active_subsystems |= ENV_OPGL;
     }
     return out;
 }
@@ -94,6 +109,9 @@ void close_subsystem(int subsystems){
     if(subsystems & ENV_MIXER){
         Mix_CloseAudio();
         Mix_Quit();
+    }
+    if(subsystems & ENV_GLFW){
+        glfwTerminate();
     }
 
 }
