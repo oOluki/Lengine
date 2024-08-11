@@ -8,7 +8,25 @@
 #include <math.h>
 #include <string.h>
 
+#ifdef __unix__
+#define FILE_SEP '/'
+#define FILE_SEP_STR "/"
+#elif defined(_WIN32)
+#define FILE_SEP '\\'
+#define FILE_SEP_STR "\\"
+#else
+#warning File Separator Not Deduced, It Will Therefore Be Taken As A Default To '/'
+#define FILE_SEP '/'
+#define FILE_SEP_STR "/"
+#endif
 
+#define FIRST(X, ...) X
+
+#define REST(X, ...) __VA_ARGS__
+
+#define CALL_RECURSIVE(FUN, ...) FUN(FIRST(__VA_ARGS__)) FUN(REST(__VA_ARGS__))
+
+#define PATH(DIR, X) DIR FILE_SEP_STR X
 
 size_t size_of_strsE(const char* ignore, ...){
     va_list args;
@@ -31,7 +49,7 @@ int get_mother_dir_size(const char* file_path){
     int size_file_path = 0;
     int last_slash = 0;
     while (file_path[size_file_path]){
-        if(file_path[size_file_path] == '/'){
+        if(file_path[size_file_path] == FILE_SEP){
             last_slash = size_file_path;
         }
         size_file_path += 1;

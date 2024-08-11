@@ -37,6 +37,14 @@ void compile(){
     }
 }
 
+void get_mother_dir(char* output, int mother_dir_size){
+    const char* file_path = __FILE__;
+    for(int i = 0; i < mother_dir_size; i+=1){
+        output[i] = file_path[i];
+    }
+    output[mother_dir_size] = '\0';
+}
+
 void plugin_init(Env* env){
     printf("Hello From Map Designer!\n");
     printf("[INFO] Initiation Requested From %p\n", env);
@@ -79,8 +87,22 @@ void plugin_init(Env* env){
         SDL_TEXTUREACCESS_TARGET, N_SUP_CHAR * CHAR_SIZEW, CHAR_SIZEH);
     map_designer.char_sheet = (SDL_Rect){0, 0, N_SUP_CHAR * CHAR_SIZEW, CHAR_SIZEH};
 
+    const int mdir_s = get_mother_dir_size(__FILE__);
 
-    const char* font_path = "/home/luki/projects/Lengine/assets/fonts/Abel_400Regular.ttf";
+    char* mother_dir = (char*)alloca(mdir_s * sizeof(char));
+
+    get_mother_dir(mother_dir, mdir_s);
+
+    #define FONT_PATH PATH(PATH("..", ".."), PATH(PATH("assets", "fonts"), "Abel_400Regular.ttf"))
+
+    char* font_path = (char*)alloca(mdir_s * sizeof(char) + sizeof(FONT_PATH));
+
+    concatonate(
+        font_path, mother_dir,
+        FONT_PATH
+    );
+
+    #undef FONT_PATH
 
     map_designer.font = TTF_OpenFont(font_path, 25);
     if(!map_designer.font){
