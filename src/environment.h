@@ -26,18 +26,13 @@ ENV_NONE =   0,
 ENV_ACTIVE = 1,
 ENV_SDL =    1 << 1,
 ENV_IMAGE =  1 << 2,
-ENV_TTF =    1 << 3,
-ENV_MIXER =  1 << 4,
-ENV_GLFW =   1 << 5,
-ENV_OPGL =   1 << 6,
-ENV_VULKAN = 1 << 7
+ENV_TTF =    1 << 3
 } EnvFlags;
 
 
 typedef struct EnvSubSysFlags{
 unsigned int Env_sdl_flags;
 int          Env_img_flags;
-int          Env_mixer_flags;
 }EnvSubSysFlags;
 
 typedef struct{
