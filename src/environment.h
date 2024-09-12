@@ -21,25 +21,20 @@ typedef struct Channel{
     int active;
 } Channel;
 
-typedef enum EnvFlags{
-ENV_NONE =   0,
-ENV_ACTIVE = 1,
-ENV_SDL =    1 << 1,
-ENV_IMAGE =  1 << 2,
-ENV_TTF =    1 << 3
-} EnvFlags;
-
-
-typedef struct EnvSubSysFlags{
-unsigned int Env_sdl_flags;
-int          Env_img_flags;
-}EnvSubSysFlags;
 
 typedef struct{
+    // shared plugin channel
     Channel  channel;
-    int      (*init_subsystem)(int, EnvSubSysFlags);
-    void     (*close_subsystem)(int);
-    int      (*get_active_subsystems)();
+
+    // callback method to load dynamic object files (dlls/shared objects)
+    void*    (*load_object_file)(const char*);
+
+    // callback method to get methods/symbols from dynamic object file (dlls/shared objects)
+    void*    (*get_object_from_symbol)(void*, const char*);
+
+    // callback method to close the dynamic object file (dlls/shared object)
+    int      (*close_object_file)(void*);
+
     int      (*load_plugin)(Plugin*, const char*);
     void     (*unload_plugin)(Plugin*);
     void     (*overwrite_plugin)(Plugin*, const char*);

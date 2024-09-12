@@ -52,11 +52,14 @@ void plugin_init(Env* env){
 
     map_designer.env = env;
 
-    EnvSubSysFlags env_init_flags;
-    env_init_flags.Env_sdl_flags = SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_TIMER;
-    env_init_flags.Env_img_flags = IMG_INIT_PNG;
+    void* subsystem = env->channel.channel;
 
-    if(!env->init_subsystem(ENV_SDL | ENV_TTF | ENV_IMAGE, env_init_flags)) exit(EXIT_FAILURE);
+    int(*init_subsystem)() = env->get_object_from_symbol(subsystem, "init");
+
+    if(init_subsystem()){
+        printf("[ERROR] Plugin: Unable To Initiate Subsystem\n");
+        exit(EXIT_FAILURE);
+    }
 
     if(SDL_GetDisplayMode(0, 0, &map_designer.dm)){
         printf("[ERROR] Unable To GetDisplay Information\n");

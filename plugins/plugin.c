@@ -37,9 +37,15 @@ void plugin_init(Env* env){
     printf("[INFO]- Plugin: Initiation Of Plugin Requested From %p\n", env);
 
     environment = env;
-    EnvSubSysFlags flags;
-    flags.Env_sdl_flags = SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_VIDEO;
-    env->init_subsystem(ENV_SDL, flags);
+    
+    void* subsystem = env->channel.channel;
+    
+    int(*init_subsystem)() = env->get_object_from_symbol(subsystem, "init");
+
+    if(init_subsystem()){
+        printf("[ERROR] Plugin: Unable To Initiate Subsystem\n");
+        exit(EXIT_FAILURE);
+    }
 
     SDL_DisplayMode dm;
     SDL_GetDisplayMode(0, 0, &dm);
@@ -59,7 +65,10 @@ static void quit(){
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_DestroyTexture(draw_texture);
-    plugin.env->close_subsystem(ENV_SDL);
+
+    void* subsystem = plugin.env->channel.channel;
+    void(*close_subsystem)() = plugin.env->get_object_from_symbol(subsystem, "close");
+    close_subsystem();
 }
 
 static inline void draw_thick_rect(SDL_Rect rect, SDL_Color color, unsigned int thickness){

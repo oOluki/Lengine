@@ -249,7 +249,9 @@ static inline void clean_memory(){
     map_designer.draw_texture = NULL;
     TTF_CloseFont(map_designer.font);
     map_designer.font = NULL;
-    map_designer.env->close_subsystem(ENV_SDL | ENV_TTF | ENV_IMAGE);
+    void* subsystem = map_designer.env->channel.channel;
+    void(*close_subsystem)() = map_designer.env->get_object_from_symbol(subsystem, "close");
+    close_subsystem();
 }
 
 static inline void draw_thick_rect(SDL_Rect rect, int thickness){

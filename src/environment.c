@@ -9,19 +9,29 @@
 
 #include <dlfcn.h>
 
+#define LE_UNIX_LINUX_MACOS 1
+
 #define LE_HANDLE void*
 #define LE_OPENLIB(PATH) dlopen(PATH, RTLD_NOW)
 #define LE_GETSYM(HANDLE, SYM) dlsym(HANDLE, SYM)
 #define LE_CLOSELIB(HANDLE) dlclose(HANDLE)
 
+
+void* load_object_file(const char* path){
+    return LE_OPENLIB(path);
+}
+
 #elif defined(_WIN32)
 
 #include <windows.h>
+
+#define LE_WINDOWS 1
 
 #define LE_HANDLE HINSTANCE
 #define LE_OPENLIB(PATH) LoadLibrary(PATH)
 #define LE_GETSYM(HANDLE, SYM) GetProcAddress(HANDLE, SYM)
 #define LE_CLOSELIB(HANDLE) FreeLibrary(HANDLE)
+
 
 #else
 
@@ -37,59 +47,11 @@ If You Got This Error In One Of This OS It Means Lengine Has Internal Problems.
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
-
-int active_subsystems = ENV_NONE;
 
 char* new_path = NULL;
 Plugin* reload_request = NULL;
-
-int init_subsystem(int subsystems, EnvSubSysFlags flags){
-    subsystems = (subsystems & (~active_subsystems));
-    int out = 1;
-    if(subsystems & ENV_SDL){
-        if(SDL_Init(flags.Env_sdl_flags)){
-            printf("[ERROR] Could Not Initiate SDL Subsytem\n");
-            out = 0;
-        } else active_subsystems |= ENV_SDL;
-    }
-    if(subsystems & ENV_IMAGE){
-        if(!IMG_Init(flags.Env_img_flags)){
-            printf("[ERROR] Could Not Initiate SDL_image Subsystem\n");
-            out = 0;
-        } else active_subsystems |= ENV_IMAGE;
-    }
-    if(subsystems & ENV_TTF){
-        if(TTF_Init()){
-            printf("[ERROR] Could Not Initiate SDL_ttf Subsytem\n");
-            out = 0;
-        } else active_subsystems |= ENV_TTF;
-    }
-    return out;
-}
-
-void close_subsystem(int subsystems){
-    subsystems = subsystems & active_subsystems;
-    active_subsystems = active_subsystems & (~subsystems);
-    if(subsystems & ENV_SDL){
-        SDL_Quit();
-    }
-    if(subsystems & ENV_IMAGE){
-        IMG_Quit();
-    }
-    if(subsystems & ENV_TTF){
-        TTF_Quit();
-    }
-
-}
-
-int get_active_subsystems(){
-    return active_subsystems;
-}
 
 int load_plugin(Plugin* plugin, const char* path){
 

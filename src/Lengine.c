@@ -10,9 +10,10 @@ bool compare_str(const char* str1, const char* str2){
 
 void print_help_message(){
     printf("[INFO] Lengine Help:\n");
-    printf("[HELP] Usage: ./Lengine <path_to_plugin>\n");
+    printf("[HELP] Usage: ./Lengine <path_to_plugin> <optional: path_to_subsystem>\n");
     printf("[HELP] To Display This Help Message: ./Lengine or ./Lengine --help\n");
     printf("[HELP] Lengine Takes A Path To A Valid Plugin, Loads It And Runs The Plugin.\n");
+    printf("[HELP] If Passed, The Object File (aka dll) At <path_to_plugin> Will Be Loaded Into The Shared Channel\n");
     printf("\n[HELP] The Plugin Must Contain The Following Methods:\n");
     printf(
         "\n[HELP] void plugin_init(Env*):\n"
@@ -49,8 +50,8 @@ int main(int argc, char** argv){
     if(argc < 2 || compare_str(argv[1], "--help")){
         print_help_message();
         return EXIT_SUCCESS;
-    } else if(argc > 2){
-        printf("[ERROR] Too Many Arguments, Expected 1 Got %u Instead\n", argc - 1);
+    } else if(argc > 3){
+        printf("[ERROR] Too Many Arguments, Expected 1 Or 2 Got %u Instead\n", argc - 1);
         printf("[HELP] To Display A Help Message Do: ./Lengine or ./Lengine --help\n");
         return EXIT_FAILURE;
     }
@@ -59,13 +60,36 @@ int main(int argc, char** argv){
     
     Env env = (Env){
         .channel = (Channel){.channel = NULL, .size = 0, .active = false},
-        .init_subsystem = init_subsystem,
-        .close_subsystem = close_subsystem,
-        .get_active_subsystems = get_active_subsystems,
+        #if defined(LE_UNIX_LINUX_MACOS)
+            .load_object_file = load_object_file,
+            .get_object_from_symbol = dlsym,
+            .close_object_file = dlclose,
+        #elif defined(LE_WINDOWS)
+            .load_object_file = LoadLibrary,
+            .get_object_from_symbol = FreeLibrary,
+            .close_object_file = GetProcAddress,
+        #endif
         .load_plugin = load_plugin,
         .unload_plugin = unload_plugin,
         .overwrite_plugin = overwrite_plugin  
     };
+
+    // load subsystem object (if requested) into shared channel
+    if(argc == 3){
+        void* subsystem = LE_OPENLIB(argv[2]);
+        if(!subsystem){
+            printf(
+                "[WARNING] Unable To Load Subsystem"
+                #ifdef LE_UNIX_LINUX_MACOS
+                ", %s\n", dlerror()
+                #else
+                "\n"
+                #endif
+            );
+        } else{
+            env.channel = (Channel){.channel = subsystem, .size = 1, .active = true};
+        }
+    }
 
     Plugin plugin;
     plugin.environment = &env;
