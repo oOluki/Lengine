@@ -16,8 +16,8 @@ int init(){
         return err;
     }
     err = IMG_Init(IMG_Init(IMG_INIT_PNG));
-    if(err)
-        return err;
+    if(!err)
+        return 1;
 
     err = TTF_Init();
     return err;
