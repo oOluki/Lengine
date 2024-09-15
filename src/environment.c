@@ -33,7 +33,7 @@ void* load_object_file(const char* path){
 #define LE_CLOSELIB(HANDLE) FreeLibrary(HANDLE)
 
 void* load_object_file(const char* path){
-    LE_HANDLE* ouput = (LE_HANDLE*)malloc(sizeof(LE_HANDLE));
+    LE_HANDLE* output = (LE_HANDLE*)malloc(sizeof(LE_HANDLE));
     *output = LE_OPENLIB(path);
     return output;
 }
