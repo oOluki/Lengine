@@ -19,6 +19,7 @@ elseif(APPLE)
     target_link_libraries(Lengine dl)     # Link against dlfcn for macOS
 endif()
 
+
 # Option to enable or disable the usage of external libraries
 option(USE_EXTERNAL_LIBS "Use external libraries (SDL2, SDL2_image, SDL2_ttf)" ON)
 

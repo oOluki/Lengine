@@ -32,6 +32,17 @@ void* load_object_file(const char* path){
 #define LE_GETSYM(HANDLE, SYM) GetProcAddress(HANDLE, SYM)
 #define LE_CLOSELIB(HANDLE) FreeLibrary(HANDLE)
 
+void* load_object_file(const char* path){
+    LE_HANDLE* ouput = (LE_HANDLE*)malloc(sizeof(LE_HANDLE));
+    *output = LE_OPENLIB(path);
+    return output;
+}
+
+int close_object_file(void* handle){
+    LE_CLOSELIB((LE_HANDLE*)handle);
+    free(handle);
+    return 0;
+}
 
 #else
 

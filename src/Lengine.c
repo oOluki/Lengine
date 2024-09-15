@@ -65,9 +65,9 @@ int main(int argc, char** argv){
             .get_object_from_symbol = dlsym,
             .close_object_file = dlclose,
         #elif defined(LE_WINDOWS)
-            .load_object_file = LoadLibrary,
+            .load_object_file = load_object_file,
             .get_object_from_symbol = FreeLibrary,
-            .close_object_file = GetProcAddress,
+            .close_object_file = close_object_file,
         #endif
         .load_plugin = load_plugin,
         .unload_plugin = unload_plugin,
