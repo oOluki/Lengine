@@ -11,7 +11,13 @@ set(SOURCE_FILES
 # Add executable and specify source files
 add_executable(Lengine ${SOURCE_FILES})
 
-target_link_libraries(Lengine stdc++fs)
+if(WIN32)
+    target_link_libraries(Lengine ws2_32) # Link Windows libraries, e.g., ws2_32
+elseif(UNIX AND NOT APPLE)
+    target_link_libraries(Lengine dl)     # Link against dlfcn for Linux
+elseif(APPLE)
+    target_link_libraries(Lengine dl)     # Link against dlfcn for macOS
+endif()
 
 # Option to enable or disable the usage of external libraries
 option(USE_EXTERNAL_LIBS "Use external libraries (SDL2, SDL2_image, SDL2_ttf)" ON)
