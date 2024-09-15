@@ -8,7 +8,7 @@ set(SOURCE_FILES
 )
 
 
-find_package(PkgConfig REQUIRED)
+find_package(PkgConfig QUIET)
 
 
 # Add executable and specify source files
@@ -46,7 +46,11 @@ endif()
 
 # Find SDL_image
 if(USE_EXTERNAL_LIBS AND ALL_LIBRARIES_FOUND)
-  pkg_check_modules(SDL2_image QUIET SDL2_image)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(SDL2_image QUIET)
+  else()
+    find_package(SDL2_image QUIET)
+  endif()
   if(NOT SDL2_image_FOUND)
     message(WARNING "SDL2_image not found, map_designer example won't be built")
     set(ALL_LIBRARIES_FOUND FALSE)
@@ -57,7 +61,11 @@ endif()
 
 # Find SDL_ttf
 if(USE_EXTERNAL_LIBS AND ALL_LIBRARIES_FOUND)
-  pkg_check_modules(SDL2_ttf QUIET SDL2_ttf)
+  if(PkgConfig_FOUND)
+    pkg_check_modules(SDL2_image QUIET)
+  else()
+    find_package(SDL2_image QUIET)
+  endif()
   if(NOT SDL2_ttf_FOUND)
     message(WARNING "SDL2_ttf not found, map_designer example won't be built")
     set(ALL_LIBRARIES_FOUND FALSE)
