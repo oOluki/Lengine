@@ -66,7 +66,7 @@ int main(int argc, char** argv){
             .close_object_file = dlclose,
         #elif defined(LE_WINDOWS)
             .load_object_file = load_object_file,
-            .get_object_from_symbol = GetProcAddress,
+            .get_object_from_symbol = get_sym,
             .close_object_file = close_object_file,
         #endif
         .load_plugin = load_plugin,
@@ -107,37 +107,40 @@ int main(int argc, char** argv){
     while(((bool(*)(Plugin*))plugin.update)(&plugin)){
         if(reload_request){
             printf("[INFO] Overwritting Plugin At %p With '%s'\n", reload_request, new_path? new_path : path_to_plugin);
-            
-            int str_size = 0;
-            for(; new_path && new_path[str_size]; str_size += 1);
-            const char* dummy = new_path;
-            new_path = (char*)alloca((str_size + 1) * sizeof(char));
-            new_path[str_size] = '\0';
-            if(dummy) memcpy(new_path, dummy, (str_size) * sizeof(char));
 
             LE_CLOSELIB(reload_request->handle);
 
-            if(!load_plugin(reload_request, dummy? new_path : path_to_plugin)){
-                *reload_request = (Plugin) {};
-                printf("[WARNING] Unable To Overwrite Plugin With '%s'\n", dummy? new_path : path_to_plugin);
+            const char* const output_path = (new_path && new_path[0])? new_path : path_to_plugin;
+
+            if(!load_plugin(reload_request, output_path)){
+                *reload_request = LE_EMPTY_PLUGIN;
+                printf("[WARNING] Unable To Overwrite Plugin With '%s'\n", output_path);
                 printf("[WARNING] Plugin At %p Holds Invalid Methods\n", reload_request);
                 if(reload_request = &plugin){
                     printf("[ERROR] Fatal Error Main Plugin Compromised\n");
                     return EXIT_FAILURE;
                 }
                 reload_request = NULL;
+                if(new_path){
+                    free(new_path);
+                    new_path = NULL;
+                }
                 continue;
             }
             if(reload_request->retrieve_state){
                 reload_request->retrieve_state(reload_request->state);
             } else{
                 printf("[WARNING] Attempt To Reload Plugin, '%s', With No void plugin_retrieve_state(void*) Definition, "
-                "Reinitialization Will Take Place Instead\n", dummy? new_path : path_to_plugin);
+                "Reinitialization Will Take Place Instead\n", output_path);
                 ((void(*)(Env*))reload_request->init)((Env*)reload_request->environment);
             }
 
-            printf("[INFO] Plugin Overwritten By '%s'\n", dummy? new_path : path_to_plugin);
+            printf("[INFO] Plugin Overwritten By '%s'\n", output_path);
             reload_request = NULL;
+            if(new_path){
+                free(new_path);
+                new_path = NULL;
+            }
         }
     }
 

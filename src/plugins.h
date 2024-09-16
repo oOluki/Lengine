@@ -2,15 +2,6 @@
 #define LE_PLUGUINLOAD
 #include "environment.h"
 
-#ifdef _WIN32
-    #ifdef BUILDING_DLL
-        #define LE_PLUGIN_EXPORT __declspec(dllexport)
-    #else
-        #define LE_PLUGIN_EXPORT __declspec(dllimport)
-    #endif
-    #define LE_PLUGIN_CALL __cdecl
-#endif
-
 #ifdef __linux__
     #define LE_PLUGIN_EXPORT __attribute__((visibility("default")))
     #define LE_PLUGIN_CALL
@@ -18,7 +9,7 @@
     #define LE_PLUGIN_EXPORT __attribute__((visibility("default")))
     #define LE_PLUGIN_CALL
 #elif defined(_WIN32)
-    #ifdef BUILDING_DLL
+    #ifdef LE_BUILDING_DLL
         #define LE_PLUGIN_EXPORT __declspec(dllexport)
     #else
         #define LE_PLUGIN_EXPORT __declspec(dllimport)
@@ -65,10 +56,13 @@ extern LE_PLUGIN_EXPORT _Bool LE_PLUGIN_CALL plugin_update(Plugin* self);
 }
 #endif
 
+#ifndef LE_BUILDING_DLL
+
 #undef LE_PLUGIN_CALL
 
 #undef LE_PLUGIN_EXPORT 
 
+#endif
 
 
 
