@@ -116,7 +116,7 @@ int main(int argc, char** argv){
                 *reload_request = LE_EMPTY_PLUGIN;
                 printf("[WARNING] Unable To Overwrite Plugin With '%s'\n", output_path);
                 printf("[WARNING] Plugin At %p Holds Invalid Methods\n", reload_request);
-                if(reload_request = &plugin){
+                if(reload_request == &plugin){
                     printf("[ERROR] Fatal Error Main Plugin Compromised\n");
                     return EXIT_FAILURE;
                 }
