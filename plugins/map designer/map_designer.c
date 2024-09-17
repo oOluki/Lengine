@@ -14,18 +14,18 @@ void compile(){
     
     char* ofile = (char*)alloca(sizeof(path) + 2 * sizeof(char));;
     int ofile_size = (sizeof(path) + 2 * sizeof(char)) / sizeof(char);
-    memcpy(ofile, path, sizeof(path) - sizeof('\0'));
+    SDL_memcpy(ofile, path, sizeof(path) - sizeof('\0'));
 
     for(int i = -1 + sizeof(path) / sizeof(char); i > -1; i -= 1){
         if(path[i] == '.'){
-            memcpy(ofile + i, ".so'", sizeof(".so'"));
+            SDL_memcpy(ofile + i, ".so'", sizeof(".so'"));
             ofile_size = i + sizeof(".so'") / sizeof(char);
             break;
         }
     }
 
-    memcpy(output, prefix_prompt, sizeof(prefix_prompt));
-    memcpy(output + ((sizeof(prefix_prompt)) / sizeof(char)) - 1, ofile, ofile_size * sizeof(char));
+    SDL_memcpy(output, prefix_prompt, sizeof(prefix_prompt));
+    SDL_memcpy(output + ((sizeof(prefix_prompt)) / sizeof(char)) - 1, ofile, ofile_size * sizeof(char));
 
     printf("[INFO] Requested Compilation:\n%s\n", output);
     if(system(output)){
@@ -48,7 +48,8 @@ void get_mother_dir(char* output, int mother_dir_size){
 void plugin_init(Env* env){
     printf("Hello From Map Designer!\n");
     printf("[INFO] Initiation Requested From %p\n", env);
-    memset(&map_designer, 0, sizeof(map_designer));
+
+    SDL_memset(&map_designer, 0, sizeof(map_designer));
 
     map_designer.env = env;
 
@@ -135,7 +136,7 @@ void plugin_init(Env* env){
     map_designer.n_map_sizex = map_designer.map_sizex;
     map_designer.n_map_sizey = map_designer.map_sizey;
     map_designer.map = (int*)malloc(map_designer.map_sizex * map_designer.map_sizey * sizeof(int));
-    memset(map_designer.map, 0, map_designer.map_sizex * map_designer.map_sizey * sizeof(int));
+    SDL_memset(map_designer.map, 0, map_designer.map_sizex * map_designer.map_sizey * sizeof(int));
 
     map_designer.sliderx_wrapper = (SDL_Rect){
         0, 0, map_designer.dm.w, map_designer.dm.h - map_designer.map_canvas.h

@@ -130,14 +130,7 @@ bool plugin_update(Plugin* self){
             if(event.key.keysym.sym == SDLK_r){
                 self->state = malloc(sizeof(PluginState));
                 *(PluginState*)self->state = plugin;
-                plugin.env->overwrite_plugin(self, "../plugins/plugin.so");
-            }
-            if(event.key.keysym.sym == SDLK_c){
-                if(system("gcc -fPIC -shared plugins/plugin.c -o plugins/plugin.so")){
-                    printf("[WARNING] Recompilation Failed\n");
-                } else{
-                    printf("[INFO] Compilation Success, No Erros, Check For Warnings.\n");
-                }
+                plugin.env->overwrite_plugin(self, NULL);
             }
         }
         if(event.type == SDL_MOUSEBUTTONDOWN){

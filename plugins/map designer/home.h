@@ -262,7 +262,7 @@ static inline bool handle_home_events(Plugin* plugin){
                     {
                     case TP_LOAD_PATH:
                         if(!map_designer.text_buffer[0]) break;
-                        memcpy(map_designer.path_to_map, map_designer.text_buffer, TEXT_BUFFER_ICAP * sizeof(char));
+                        SDL_memcpy(map_designer.path_to_map, map_designer.text_buffer, TEXT_BUFFER_ICAP * sizeof(char));
                         map_designer.size_of_map_path = map_designer.text_position;
                         printf("[INFO] New Path : %s\n", map_designer.path_to_map);
                         map_designer.reload_map = true;
@@ -318,7 +318,7 @@ static inline bool handle_home_events(Plugin* plugin){
                     default:
                         break;
                     }
-                    memset(map_designer.text_buffer, '\0', TEXT_BUFFER_ICAP);
+                    SDL_memset(map_designer.text_buffer, '\0', TEXT_BUFFER_ICAP);
                     map_designer.text_position = 0;
                     map_designer.text_purpose = TP_NONE;
                 } else if(event.key.keysym.sym == SDLK_BACKSPACE && map_designer.text_position){
@@ -379,14 +379,14 @@ static inline bool handle_home_events(Plugin* plugin){
                     if(map_designer.n_map_sizex != map_designer.map_sizex
                     || map_designer.n_map_sizey != map_designer.map_sizey){
                         int* new_map = (int*)malloc(map_designer.n_map_sizex * map_designer.n_map_sizey * sizeof(int));
-                        memset(new_map, 0, map_designer.n_map_sizex * map_designer.n_map_sizey * sizeof(int));
+                        SDL_memset(new_map, 0, map_designer.n_map_sizex * map_designer.n_map_sizey * sizeof(int));
                         size_t __sy = map_designer.map_sizey < map_designer.n_map_sizey?
                             map_designer.map_sizey : map_designer.n_map_sizey;
                         size_t __sx = map_designer.map_sizex < map_designer.n_map_sizex?
                             map_designer.map_sizex : map_designer.n_map_sizex;
 
                         for(size_t i = 0; i < __sy; i+=1){
-                            memcpy(
+                            SDL_memcpy(
                                 new_map + i * map_designer.n_map_sizex,
                                 map_designer.map + i * map_designer.map_sizex,
                                 __sx * sizeof(int)

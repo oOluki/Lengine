@@ -6,7 +6,6 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <math.h>
-#include <string.h>
 
 #ifdef __unix__
 #define FILE_SEP '/'

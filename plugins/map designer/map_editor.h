@@ -169,20 +169,13 @@ static inline bool handle_map_events(Plugin* plugin){
                 map_designer.env->overwrite_plugin(plugin, NULL);
                 break;
             }
-            case SDLK_c:
-                if(map_designer.flags & MDF_CTRL)
-                    compile();
-                else if(map_designer.flags & MDF_SELECTION_ACTIVE){
-                    map_designer.flags |= MDF_SELECTION2_ACTIVE;
-                    map_designer.selection2 = map_designer.selection;
-                }
-                break;
             case SDLK_o:
                 map_designer.scrollx = 0;
                 map_designer.scrolly = 0;
                 map_designer.zoom = 1.0f;
                 break;
             case SDLK_v:
+                printf("%i\n", map_designer.map[0]);
                 if(map_designer.flags & MDF_SELECTION_ACTIVE){
                     size_t sl2_pos = map_designer.selection2.x;
                     sl2_pos += (int)(map_designer.selection2.y) * map_designer.map_sizex;
@@ -201,7 +194,7 @@ static inline bool handle_map_events(Plugin* plugin){
                         (map_designer.selection.x);
                         int* src = map_designer.map + sl2_pos +
                         (size_t)(i - map_designer.selection.y) * map_designer.map_sizex;
-                        memcpy(dest, src, sizeof(int) * __reachx);
+                        SDL_memcpy(dest, src, sizeof(int) * __reachx);
                     }
                 }
                 break;
@@ -307,7 +300,7 @@ static inline bool handle_map_events(Plugin* plugin){
                     i+=1){
                         int* begin = map_designer.map + i * map_designer.map_sizex +
                         (map_designer.selection.x);
-                        memset(begin, 0, sizeof(int) * map_designer.selection.w);
+                        SDL_memset(begin, 0, sizeof(int) * map_designer.selection.w);
                     }
                 }
                 break;
@@ -410,7 +403,7 @@ static inline bool handle_map_events(Plugin* plugin){
                     i+=1){
                         int* begin = map_designer.map + i * map_designer.map_sizex +
                         (map_designer.selection.x);
-                        memset(begin, 0, sizeof(int) * (map_designer.selection.w));
+                        SDL_memset(begin, 0, sizeof(int) * (map_designer.selection.w));
                     }
                 }
             }
@@ -484,11 +477,11 @@ static inline void update_map(){
     if(map_designer.flags & MDF_PLACING){
         size_t position = (map_designer.mousex + map_designer.scrollx - XOFFSET) / TILESIZEW;
         position += map_designer.map_sizex * (int)((map_designer.mousey + map_designer.scrolly - YOFFSET) / TILESIZEH);
-        if(position > 0 && position < map_designer.map_sizex * map_designer.map_sizey) map_designer.map[position] = (int)map_designer.held_tile;
+        if(position >= 0 && position < map_designer.map_sizex * map_designer.map_sizey) map_designer.map[position] = (int)map_designer.held_tile;
     } else if(map_designer.flags & MDF_ERASING){
         size_t position = (map_designer.mousex + map_designer.scrollx - XOFFSET) / TILESIZEW;
         position += map_designer.map_sizex * (int)((map_designer.mousey + map_designer.scrolly - YOFFSET) / TILESIZEH);
-        if(position > 0 && position < map_designer.map_sizex * map_designer.map_sizey) map_designer.map[position] = 0;
+        if(position >= 0 && position < map_designer.map_sizex * map_designer.map_sizey) map_designer.map[position] = 0;
     } else if(map_designer.flags & MDF_SELECTING){
         map_designer.selection.w = map_designer.mousex - map_designer.selection.x;
         map_designer.selection.h = map_designer.mousey - map_designer.selection.y;
