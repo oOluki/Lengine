@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27.0)
-project(Lengine VERSION 1.0.0 LANGUAGES C CXX)
+project(Lengine VERSION 1.0.1 LANGUAGES C CXX)
 
 
 # Add your source files

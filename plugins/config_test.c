@@ -25,6 +25,8 @@ SOFTWARE.
 #define CONFIG_TEST_HEADER
 
 
+#define LE_BUILDING_DLL 1
+
 #include "../src/environment.h"
 #include <stdlib.h>
 #include <stdio.h>

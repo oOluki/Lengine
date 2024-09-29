@@ -26,6 +26,9 @@ SOFTWARE.
 #define CONFIG_TEST_CONFIG_HEADER
 
 #include <stdio.h>
+
+#define LE_BUILDING_DLL 1
+
 #include "../src/environment.h"
 
 #ifdef __cplusplus
