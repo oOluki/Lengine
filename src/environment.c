@@ -129,7 +129,7 @@ int close_object_file(void* handle){
 
 
 void* load_object_file(const char* path){
-    return (void*)LoadLibrary(PATH);
+    return (void*)LoadLibrary(path);
 }
 
 void* get_sym(void* handle, const char* symbol_name){
