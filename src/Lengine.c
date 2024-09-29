@@ -84,11 +84,11 @@ int main(int argc, char** argv){
         .channel = (Channel){.channel = NULL, .size = 0, .active = false},
         #if defined(LE_UNIX_LINUX_MACOS)
             .load_object_file = load_object_file,
-            .get_object_from_symbol = dlsym,
+            .get_symbol_from_object = dlsym,
             .close_object_file = dlclose,
         #elif defined(LE_WINDOWS)
             .load_object_file = load_object_file,
-            .get_object_from_symbol = get_sym,
+            .get_symbol_from_object = get_sym,
             .close_object_file = close_object_file,
         #endif
         .load_plugin = load_plugin,
@@ -109,6 +109,7 @@ int main(int argc, char** argv){
                 #endif
             );
         } else{
+            printf("[INFO] Loaded Requested Subsystem At '%s' To Handle At %p (Present In The Shared Channel)\n", argv[2], subsystem);
             env.channel = (Channel){.channel = subsystem, .size = 1, .active = true};
         }
     }

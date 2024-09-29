@@ -70,7 +70,7 @@ void* load_object_file(const char* path){
 #include <stdlib.h>
 #include <string.h>
 
-/*  If Microsoft eventually goes out of their minds and HINSTANCE can no longer be safelly casted to void* the code below should get you covered
+/*  If Microsoft eventually goes out of their minds and HINSTANCE and HMODULE can no longer be safelly casted to void* the code below should get you covered
 
 static LE_HANDLE* loaded_handles = NULL;
 static size_t handle_cap = 0;
@@ -129,7 +129,7 @@ int close_object_file(void* handle){
 
 
 void* load_object_file(const char* path){
-    return (void*)LoadLibrary(path);
+    return (void*)LoadLibrary((LPCSTR)path);
 }
 
 void* get_sym(void* handle, const char* symbol_name){
@@ -137,7 +137,7 @@ void* get_sym(void* handle, const char* symbol_name){
 }
 
 int close_object_file(void* handle){
-    return (int)FreeLibrary((HINSTANCE)handle);;
+    return (int)FreeLibrary((HMODULE)handle);;
 }
 
 #else

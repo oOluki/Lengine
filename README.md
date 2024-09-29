@@ -3,7 +3,7 @@ Lengine is a project containing a simple hot reload executable and some example 
 
 To build this, simply compile the Lengine.c file linking against dlfcn in linux and macos or ws2_32 in windows, or use cmake.
 
-To use it first define the macro LE_BUILDING_DLL (doesn't matter the definition, just define it), include the environment.h header (you can copy the header for convinience, it is a standalone header only) and define the void plugin_init(Env*) and bool plugin_update(Plugin*) methods with the LE_PLUGIN_EXPORT macro before the definition, additionally you may define the void plugin_retrieve_state(void*) method for hot reloading (with the LE_PLUGIN_EXPORT macro also). Here is the usage:
+To use it first define the macro LE_BUILDING_DLL (doesn't matter the definition, just define it), include the Lenv.h header (you can copy the header for convinience, it is a standalone header only) and define the void plugin_init(Env*) and bool plugin_update(Plugin*) methods with the LE_PLUGIN_EXPORT macro before the definition, additionally you may define the void plugin_retrieve_state(void*) method for hot reloading (with the LE_PLUGIN_EXPORT macro also). Here is the usage:
 
   Lengine Help:
 
@@ -26,7 +26,7 @@ To use it first define the macro LE_BUILDING_DLL (doesn't matter the definition,
     for testing purposes
 
   map_designer:
-    a plugin that allows for tile map design.
+    A plugin that allows for tile map design built using SDL2, SDL2_image and SDL2_ttf.
     
     usage:
     press h to go to home or press m to go to the map editor;

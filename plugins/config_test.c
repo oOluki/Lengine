@@ -21,19 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#ifndef CONFIG_TEST_HEADER
+#define CONFIG_TEST_HEADER
 
-
-#ifndef LE_TEST_PLUGIN
-#define LE_TEST_PLUGIN
-#define LE_BUILDING_DLL 1
 
 #include "../src/environment.h"
-#include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct{
     Env* env;
+    void* subsystem;
     int reload_count;
 } PluginState;
 
@@ -46,6 +50,15 @@ LE_PLUGIN_EXPORT void plugin_init(Env* env){
     plugin.env = env;
     
     plugin.reload_count = 0;
+
+    void* subsystem = env->channel.channel;
+
+    int(*init_subsystem)(void) = (int(*)())env->get_symbol_from_object(subsystem, "init");
+
+    init_subsystem();
+
+    plugin.subsystem = subsystem;
+
 }
 
 
@@ -53,8 +66,13 @@ LE_PLUGIN_EXPORT bool plugin_update(Plugin* self){
 
     printf("\nplugin owned by %p with %i reloads\n", plugin.env, plugin.reload_count);
 
+    void(*use_subsystem)(void)  = (void(*)())plugin.env->get_symbol_from_object(plugin.subsystem, "use");
 
-    if(plugin.reload_count > 3){
+    use_subsystem();
+
+    if(plugin.reload_count > 2){
+        void(*close_subsystem)(void) = (void(*)())plugin.env->get_symbol_from_object(plugin.subsystem, "close");
+        close_subsystem();
         return false;
     }
 
@@ -76,9 +94,8 @@ LE_PLUGIN_EXPORT void plugin_retrieve_state(void* plugin_state){
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 
-
-
-
-
-#endif // END OF CODE ========================================
+#endif // =====================  END OF FILE CONFIG_TEST_HEADER ===========================
