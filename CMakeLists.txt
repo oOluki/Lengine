@@ -35,8 +35,6 @@ if(USE_EXTERNAL_LIBS)
   if(NOT SDL2_FOUND)
     message("SDL2 not found, map_designer example won't be build")
     set(ALL_LIBRARIES_FOUND FALSE)
-    target_link_libraries(config SDL2)
-    target_compile_definitions(config PRIVATE LE_SDL2_FOUND LE_BUILDING_DLL)
   endif()
 endif()
 
