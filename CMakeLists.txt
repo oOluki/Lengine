@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27.0)
-project(Lengine VERSION 0.3.0 LANGUAGES C CXX)
+project(Lengine VERSION 1.0.1 LANGUAGES C CXX)
 
 
 # Add your source files
@@ -11,8 +11,6 @@ set(SOURCE_FILES
 # Add executable and specify source files
 add_executable(Lengine ${SOURCE_FILES})
 
-
-add_library(test_plugin SHARED plugins/test.c)
 
 if(WIN32)
     target_link_libraries(Lengine ws2_32) # Link Windows libraries, e.g., ws2_32
@@ -61,7 +59,7 @@ if(USE_EXTERNAL_LIBS AND ALL_LIBRARIES_FOUND)
     )
 
     add_library(config SHARED
-      plugins/config.c
+      plugins/map_designer/config.c
     )
 
     target_link_libraries(config SDL2 SDL2_image SDL2_ttf)
@@ -70,26 +68,54 @@ if(USE_EXTERNAL_LIBS AND ALL_LIBRARIES_FOUND)
   endif()
 endif()
 
+
+
+# tests ============================================================
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+message("Building Debug Tests")
+
+add_library(test_plugin SHARED plugins/test.c)
+
+add_library(config_test SHARED plugins/config_test.c)
+
+add_library(config_test_config SHARED plugins/config_test_config.c)
+
 include(CTest)
 enable_testing()
 
-
-# Use a custom command to print the absolute path of the built library
 add_custom_command(
     TARGET test_plugin
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Built shared library absolute path: $<TARGET_FILE:test_plugin>"
 )
 
-# Optionally, if you want to store the path in a variable:
+add_custom_command(
+    TARGET config_test
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Built shared library absolute path: $<TARGET_FILE:config_test>"
+)
+
+add_custom_command(
+    TARGET config_test_config
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Built shared library absolute path: $<TARGET_FILE:config_test_config>"
+)
+
+# Optionally, store paths in variables
 set(TEST_PLUGIN_PATH $<TARGET_FILE:test_plugin>)
+set(CONFIG_TEST_PATH $<TARGET_FILE:config_test>)
+set(CONFIG_TEST_CONFIG_PATH $<TARGET_FILE:config_test_config>)
 
 
 add_test(NAME Test COMMAND Lengine ${TEST_PLUGIN_PATH})
 
-set_tests_properties(Test PROPERTIES TIMEOUT 5)
+add_test(NAME ConfigTest COMMAND Lengine ${CONFIG_TEST_PATH} ${CONFIG_TEST_CONFIG_PATH})
 
+set_tests_properties(Test ConfigTest PROPERTIES TIMEOUT 3)
 
-message("Built shared library absolute path: ${TEST_PLUGIN_PATH}")
-
-
+endif()

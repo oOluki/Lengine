@@ -42,7 +42,7 @@ void plugin_init(Env* env){
 
     void* subsystem = env->channel.channel;
 
-    int(*init_subsystem)() = env->get_object_from_symbol(subsystem, "init");
+    int(*init_subsystem)() = env->get_symbol_from_object(subsystem, "init");
 
     if(init_subsystem()){
         printf("[ERROR] Plugin: Unable To Initiate Subsystem\n");

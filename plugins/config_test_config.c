@@ -1,6 +1,7 @@
+/*
 MIT License
 
-Copyright (c) 2020 Expo
+Copyright (c) 2024 oOluki
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +20,41 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+#ifndef CONFIG_TEST_CONFIG_HEADER
+#define CONFIG_TEST_CONFIG_HEADER
+
+#include <stdio.h>
+
+#define LE_BUILDING_DLL 1
+
+#include "../src/environment.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LE_PLUGIN_EXPORT int init(){
+    printf("dummy subsytem initiated\n");
+    return 0;
+}
+
+
+LE_PLUGIN_EXPORT void use(){ // test if the internal state will survive the primary plugin reload
+    static int dummy = 0;
+    printf("%i calls to the subsystem\n", dummy++);
+}
+
+
+LE_PLUGIN_EXPORT void close(){
+    printf("dummy subsystem closed\n");
+}
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // =====================  END OF FILE TEST_CONFIG_HEADER ===========================
