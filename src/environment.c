@@ -70,6 +70,8 @@ void* load_object_file(const char* path){
 #include <stdlib.h>
 #include <string.h>
 
+/*  If Microsoft eventually goes out of their minds and HINSTANCE can no longer be safelly casted to void* the code below should get you covered
+
 static LE_HANDLE* loaded_handles = NULL;
 static size_t handle_cap = 0;
 static size_t loaded_handles_count = 0;
@@ -120,6 +122,22 @@ int close_object_file(void* handle){
 
 
     return output;
+}
+
+*/ // Otherwise the code below is more performant...
+
+
+
+void* load_object_file(const char* path){
+    return (void*)LoadLibrary(PATH);
+}
+
+void* get_sym(void* handle, const char* symbol_name){
+    return (void*)GetProcAddress((HMODULE)handle, symbol_name);;
+}
+
+int close_object_file(void* handle){
+    return (int)FreeLibrary((HINSTANCE)handle);;
 }
 
 #else
