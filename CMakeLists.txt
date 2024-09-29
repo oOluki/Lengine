@@ -14,6 +14,8 @@ add_executable(Lengine ${SOURCE_FILES})
 
 add_library(test_plugin SHARED plugins/test.c)
 
+target_compile_definitions(test_plugin PRIVATE LE_BUILDING_DLL)
+
 if(WIN32)
     target_link_libraries(Lengine ws2_32) # Link Windows libraries, e.g., ws2_32
 elseif(UNIX AND NOT APPLE)
@@ -88,7 +90,7 @@ set(TEST_PLUGIN_PATH $<TARGET_FILE:test_plugin>)
 
 add_test(NAME Test COMMAND Lengine ${TEST_PLUGIN_PATH})
 
-set_tests_properties(Test PROPERTIES TIMEOUT 15)
+set_tests_properties(Test PROPERTIES TIMEOUT 5)
 
 
 message("Built shared library absolute path: ${TEST_PLUGIN_PATH}")
