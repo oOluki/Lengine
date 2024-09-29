@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2024 oOluki
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #ifndef LE_MAPDESIGNER_C
 #define LE_MAPDESIGNER_C
 
@@ -7,43 +31,6 @@
 
 #define MAP_CANVAS 20, 20, map_designer.dm.w - 20, map_designer.dm.h - 20
 
-void compile(){
-    const char path[] = "'"__FILE__"'";
-    const char prefix_prompt[] = "gcc -fPIC -shared " "'" __FILE__ "' -o ";
-    char output[(sizeof(prefix_prompt) / sizeof(char)) + (sizeof(path) / sizeof(char)) + 2];
-    
-    char* ofile = (char*)alloca(sizeof(path) + 2 * sizeof(char));;
-    int ofile_size = (sizeof(path) + 2 * sizeof(char)) / sizeof(char);
-    SDL_memcpy(ofile, path, sizeof(path) - sizeof('\0'));
-
-    for(int i = -1 + sizeof(path) / sizeof(char); i > -1; i -= 1){
-        if(path[i] == '.'){
-            SDL_memcpy(ofile + i, ".so'", sizeof(".so'"));
-            ofile_size = i + sizeof(".so'") / sizeof(char);
-            break;
-        }
-    }
-
-    SDL_memcpy(output, prefix_prompt, sizeof(prefix_prompt));
-    SDL_memcpy(output + ((sizeof(prefix_prompt)) / sizeof(char)) - 1, ofile, ofile_size * sizeof(char));
-
-    printf("[INFO] Requested Compilation:\n%s\n", output);
-    if(system(output)){
-        printf("[WARNING] Compilation Failed ^^^\n");
-        SDL_SetWindowTitle(map_designer.window, "Le: Map Designer -compilation failed");
-    } else{
-        printf("[INFO] Compilation Finnished With No Errors, Warnings Could Still Have Happened\n");
-        SDL_SetWindowTitle(map_designer.window, "Le: Map Designer +compilation success");
-    }
-}
-
-void get_mother_dir(char* output, int mother_dir_size){
-    const char* file_path = __FILE__;
-    for(int i = 0; i < mother_dir_size; i+=1){
-        output[i] = file_path[i];
-    }
-    output[mother_dir_size] = '\0';
-}
 
 void plugin_init(Env* env){
     printf("Hello From Map Designer!\n");
@@ -93,29 +80,30 @@ void plugin_init(Env* env){
 
     const int mdir_s = get_mother_dir_size(__FILE__);
 
-    char* mother_dir = (char*)alloca(mdir_s * sizeof(char));
+    printf(__FILE__ " %i : %zu\n", mdir_s, sizeof(__FILE__) /sizeof(char));
 
-    get_mother_dir(mother_dir, mdir_s);
+    char mother_dir[sizeof(__FILE__) / sizeof(char)] = __FILE__;
+    mother_dir[mdir_s] = '\0';
 
-    #define FONT_PATH PATH(PATH("..", ".."), PATH(PATH("assets", "fonts"), "Abel_400Regular.ttf"))
-
-    char* font_path = (char*)alloca(mdir_s * sizeof(char) + sizeof(FONT_PATH));
+    char* font_path = (char*)malloc((mdir_s + 3) * sizeof(char) + sizeof(PATH(PATH("assets", "fonts"), "Abel_400Regular.ttf")));
 
     concatonate(
         font_path, mother_dir,
-        FONT_PATH
+        PATH(PATH("assets", "fonts"), "Abel_400Regular.ttf")
     );
-
-    #undef FONT_PATH
 
     map_designer.font = TTF_OpenFont(font_path, 25);
     if(!map_designer.font){
         printf("[ERROR] %s\n[ERROR] Unable To Load Font '%s'\n", TTF_GetError(), font_path);
+        free(font_path);
         exit(EXIT_FAILURE);
     }
 
+    free(font_path);
+    font_path = NULL;
+
     init_chars_sheet();
-    
+
     map_designer.draw_texture = SDL_CreateTexture(map_designer.renderer,
     SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, map_designer.dm.w, map_designer.dm.h);
 

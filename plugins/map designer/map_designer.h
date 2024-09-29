@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2024 oOluki
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #ifndef LE_MAPDESIGNER
 #define LE_MAPDESIGNER
 
@@ -5,7 +29,7 @@
 #define LE_BUILDING_DLL 1
 
 #include "funcs.h"
-#include "../src/environment.h"
+#include "../../src/environment.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -168,8 +192,6 @@ TEXT_ERROR_UNSUPPORTED_CHARACTER = 1 << 2
 };
 
 int text_err_special_flags = 0;
-
-extern void compile();
 
 static inline void load_map(const char* path){
     printf("[INFO] Loading Map '%s'\n", path);
@@ -391,8 +413,9 @@ static inline void draw_number(int number, SDL_Rect digit_canvas, const SDL_Rect
     for(int nb = number; nb; nb /= 10){
         nd += 1;
     }
-    char* str = (char*)alloca((nd + 1) * sizeof(char));
-    to_string(number, str, nd);
+    // 64 bit integers should not pass 32 digits (not even close)
+    char str[32];
+    to_string(number, str, nd > 32? 32 : nd);
     draw_text(str, digit_canvas, canvas);
     
 }

@@ -1,3 +1,28 @@
+/*
+MIT License
+
+Copyright (c) 2024 oOluki
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+
 #ifdef LE_ENVIRONMENT_C
 // This file should only be included once and in Lengine.c
 #error [INTERNAL ERROR] Attempt To Include 'environment.c', aka 'environment implementation', more than once. This file should only be really included once in main.c
@@ -55,9 +80,7 @@ void* load_object_file(const char* path){
         LE_HANDLE* dummy = loaded_handles;
         loaded_handles = (LE_HANDLE*)malloc((handle_cap + LE_HANDLE_BASE_CAP) * sizeof(LE_HANDLE));
         handle_cap += LE_HANDLE_BASE_CAP;
-        for(size_t i = 0; i < loaded_handles_count; i += 1){
-            loaded_handles[i] = dummy[i];
-        }
+        memcpy(loaded_handles, dummy, loaded_handles_count * sizeof(LE_HANDLE));
         free(dummy);
     }
     loaded_handles[loaded_handles_count] = LoadLibrary(path);
@@ -85,11 +108,16 @@ int close_object_file(void* handle){
 
     const int output = (int)FreeLibrary(loaded_handles[d]);
 
+    memcpy(loaded_handles + d, loaded_handles + d + 1, (loaded_handles_count - d - 1) * sizeof(LE_HANDLE));
+
     loaded_handles_count -= 1;
 
-    for(size_t i = d; i < loaded_handles_count; i+=1){
-        loaded_handles[i] = loaded_handles[i + 1];
+    if (loaded_handles_count == 0) {
+        free(loaded_handles);
+        loaded_handles = NULL;
+        handle_cap = 0;
     }
+
 
     return output;
 }
