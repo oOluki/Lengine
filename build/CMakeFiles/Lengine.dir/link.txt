@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/Lengine.dir/src/Lengine.c.o -o Lengine  -ldl

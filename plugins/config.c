@@ -1,6 +1,9 @@
 #ifndef LE_CONGIG
 #define LE_CONGIG
 
+#define LE_BUILDING_DLL 1
+
+#include "../src/environment.h"
 
 #ifdef LE_SDL2_FOUND
 #include <SDL2/SDL.h>

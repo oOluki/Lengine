@@ -100,14 +100,6 @@ extern LE_PLUGIN_EXPORT _Bool LE_PLUGIN_CALL plugin_update(Plugin* self);
 }
 #endif
 
-#ifndef LE_BUILDING_DLL
-
-#undef LE_PLUGIN_CALL
-
-#undef LE_PLUGIN_EXPORT 
-
-#endif
-
 
 
 #endif // END OF PLUGINS SETUP ====================================================================================

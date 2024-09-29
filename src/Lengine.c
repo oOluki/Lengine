@@ -13,24 +13,21 @@ void print_help_message(){
     printf("[HELP] Usage: ./Lengine <path_to_plugin> <optional: path_to_subsystem>\n");
     printf("[HELP] To Display This Help Message: ./Lengine or ./Lengine --help\n");
     printf("[HELP] Lengine Takes A Path To A Valid Plugin, Loads It And Runs The Plugin.\n");
-    printf("[HELP] If Passed, The Object File (aka dll) At <path_to_plugin> Will Be Loaded Into The Shared Channel\n");
+    printf("[HELP] If Passed, The Object File (aka dll) At <path_to_subsystem> Will Be Loaded Into The Shared Channel\n");
     printf("\n[HELP] The Plugin Must Contain The Following Methods:\n");
     printf(
         "\n[HELP] void plugin_init(Env*):\n"
         "\tUsed to initiate the plugin once first loaded, and on all subsequential loads if hot realoading is not implemented "
         "(see void plugin_retireve_state(void*)). It takes a pointer to the Lengine environment in case the plugin wants to "
-        "internally manipulate it or use its channel , discretion is adviced when doing so as it can lead to unpredictable behavior.\n"
+        "internally manipulate it or use its channel.\n"
     );
     printf(
         "\n[HELP] bool plugin_update(Plugin*):\n"
         "\tThe method to be called every frame that the plugin is active, it takes a pointer to its own Plugin object (see Plugin). "
         "This method should also return 0 if the plugin is to be closed or 1 other wise. "
-        "If you wish to hot reload write the plugin's state to the Plugin object state "
-        "that way it will be passed to the void plugin_retrieve_state(void*) (see void plugin_retireve_state(void*)) method after the plugin gets reloaded.\n"
-        ", set the Plugin object's flags (see PluginFlags) to PLUGIN_HOT_RELOAD and return 0 to signal the Lengine environment to close the current version of the plugin. "
-        "If, on the other hand, you want to terminally close the plugin, set the Plugin object's flags to PLUGIN_QUIT and "
-        "return 0 to signal the Lengine environment to close the plugin. "
-        "Be wary that Lengine does not free any memory dynamically allocated by the plugin, not even if its on its Plugin object's state.\n"
+        "If you wish to hot reload write the plugin's state to the Plugin object state to save it and use the "
+        "void (*overwrite_plugin)(Plugin*, const char*) callback method of the Env object to overwrite the current plugin with the object file at the passed path, "
+        "or at <path_to_plugin> if NULL is passed. Be wary that Lengine does not free any memory dynamically allocated by the plugin, not even if its on its Plugin object's state.\n"
     );
     printf("\n[HELP] The Plugin May Contain The Follwing Method (For Hot Reloading):\n");
     printf(
@@ -38,7 +35,7 @@ void print_help_message(){
         "\tUsed for hot reloading, if a plugin doesn't want/need hot reloading simply don't define this method in it "
         "(in which case the Lengine aplication will simply start the plugin using plugin_init())."
         "This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve "
-        "its previos state from before closing when the environment's int overwrite_plugin(Plugin*, const char*) method is called. The state that is passed to "
+        "its previos state from before closing when the environment's void overwrite_plugin(Plugin*, const char*) method is called. The state that is passed to "
         "this function is the one in the Plugin object's state\n"
     );
     printf("\n[INFO] End Of Lengine Help Message\n");

@@ -14,8 +14,6 @@ add_executable(Lengine ${SOURCE_FILES})
 
 add_library(test_plugin SHARED plugins/test.c)
 
-target_compile_definitions(test_plugin PRIVATE LE_BUILDING_DLL)
-
 if(WIN32)
     target_link_libraries(Lengine ws2_32) # Link Windows libraries, e.g., ws2_32
 elseif(UNIX AND NOT APPLE)
@@ -67,9 +65,8 @@ if(USE_EXTERNAL_LIBS AND ALL_LIBRARIES_FOUND)
     )
 
     target_link_libraries(config SDL2 SDL2_image SDL2_ttf)
-    target_compile_definitions(config PRIVATE LE_SDL2_FOUND LE_IMG_TTF_FOUND LE_BUILDING_DLL)
+    target_compile_definitions(config PRIVATE LE_SDL2_FOUND LE_IMG_TTF_FOUND)
     target_link_libraries(map_designer SDL2 SDL2_image SDL2_ttf)
-    target_compile_definitions(map_designer PRIVATE LE_BUILDING_DLL)
   endif()
 endif()
 

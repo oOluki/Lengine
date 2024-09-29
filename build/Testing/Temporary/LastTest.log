@@ -1,0 +1,44 @@
+Start testing: Sep 29 14:12 -03
+----------------------------------------------------------
+1/1 Testing: Test
+1/1 Test: Test
+Command: "/home/luki/projects/Lengine/build/Lengine" "/home/luki/projects/Lengine/build/libtest_plugin.so"
+Directory: /home/luki/projects/Lengine/build
+"Test" start time: Sep 29 14:12 -03
+Output:
+----------------------------------------------------------
+[INFO] Loading '/home/luki/projects/Lengine/build/libtest_plugin.so' To Plugin At 0x7ffc92c962f0
+[INFO] Plugin At 0x7ffc92c962f0
+[INFO] Plugin: Hi From Test Plugin
+[INFO]- Plugin: Initiation Of Plugin Requested From 0x7ffc92c96320
+plugin owned by 0x7ffc92c96320 with 0 reloads
+[INFO] Overwritting Plugin At 0x7ffc92c962f0 With '/home/luki/projects/Lengine/build/libtest_plugin.so'
+[INFO] Loading '/home/luki/projects/Lengine/build/libtest_plugin.so' To Plugin At 0x7ffc92c962f0
+[INFO] getting state from 0x5e22ee33b8d0 to 0x726eea92a050
+[INFO] Plugin Overwritten By '/home/luki/projects/Lengine/build/libtest_plugin.so'
+plugin owned by 0x7ffc92c96320 with 1 reloads
+[INFO] Overwritting Plugin At 0x7ffc92c962f0 With '/home/luki/projects/Lengine/build/libtest_plugin.so'
+[INFO] Loading '/home/luki/projects/Lengine/build/libtest_plugin.so' To Plugin At 0x7ffc92c962f0
+[INFO] getting state from 0x5e22ee33b8d0 to 0x726eea92a050
+[INFO] Plugin Overwritten By '/home/luki/projects/Lengine/build/libtest_plugin.so'
+plugin owned by 0x7ffc92c96320 with 2 reloads
+[INFO] Overwritting Plugin At 0x7ffc92c962f0 With '/home/luki/projects/Lengine/build/libtest_plugin.so'
+[INFO] Loading '/home/luki/projects/Lengine/build/libtest_plugin.so' To Plugin At 0x7ffc92c962f0
+[INFO] getting state from 0x5e22ee33b8d0 to 0x726eea92a050
+[INFO] Plugin Overwritten By '/home/luki/projects/Lengine/build/libtest_plugin.so'
+plugin owned by 0x7ffc92c96320 with 3 reloads
+[INFO] Overwritting Plugin At 0x7ffc92c962f0 With '/home/luki/projects/Lengine/build/libtest_plugin.so'
+[INFO] Loading '/home/luki/projects/Lengine/build/libtest_plugin.so' To Plugin At 0x7ffc92c962f0
+[INFO] getting state from 0x5e22ee33b8d0 to 0x726eea92a050
+[INFO] Plugin Overwritten By '/home/luki/projects/Lengine/build/libtest_plugin.so'
+plugin owned by 0x7ffc92c96320 with 4 reloads
+[INFO] Lengine Shutdown
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"Test" end time: Sep 29 14:12 -03
+"Test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 29 14:12 -03

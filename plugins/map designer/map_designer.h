@@ -1,6 +1,9 @@
 #ifndef LE_MAPDESIGNER
 #define LE_MAPDESIGNER
 
+
+#define LE_BUILDING_DLL 1
+
 #include "funcs.h"
 #include "../src/environment.h"
 #include <SDL2/SDL.h>

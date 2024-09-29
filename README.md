@@ -1,9 +1,9 @@
 # Lengine
 Lengine is a project containing a simple hot reload executable and some example plugins it runs. The idea is to be able to pass the absolute path of this plugin objects (.dll/.so) and have the Lengine executable run them, while also allowing for cool features as hot reloads, which can make software development more convinient.
 
-To build this, simply compile the Lengine.c file linking against dlfcn in linux and macos or ws2_32 in windows, or use cmake
+To build this, simply compile the Lengine.c file linking against dlfcn in linux and macos or ws2_32 in windows, or use cmake.
 
-To use it include the environment.h header and define the void plugin_init(Env*) and bool plugin_update(Plugin*) methods, additionally you may define the void plugin_retrieve_state(void*) method for hot reloading. Here is the usage:
+To use it first define the macro LE_BUILDING_DLL (doesn't matter the definition, just define it), include the environment.h header (you can copy the header for convinience, it is a standalone header only) and define the void plugin_init(Env*) and bool plugin_update(Plugin*) methods with the LE_PLUGIN_EXPORT macro before the definition, additionally you may define the void plugin_retrieve_state(void*) method for hot reloading (with the LE_PLUGIN_EXPORT macro also). Here is the usage:
 
   Lengine Help:
 
@@ -11,19 +11,19 @@ To use it include the environment.h header and define the void plugin_init(Env*)
     To Display This Help Message: ./Lengine or ./Lengine --help\n");
     Lengine Takes A Path To A Valid Plugin, Loads It And Runs The Plugin. If Passed, The Object File (aka dll) At path_to_subsystem> Will Get Loaded To The Shared Channel Where Plugins Can Retrieve Symbols And Methods From It (see the map_designer example).
 
-    The Plugin Must Contain The Following Methods:
+    The Plugin Must Contain The Following Methods, With The Appropriate Export Macros (In Doubt Just Use LE_PLUGIN_EXPORT Before The Method Definition, For Example "LE_PLUGIN_EXPORT bool plugin_update(Plugin*){<definition>}"):
       void plugin_init(Env*):
-        Used to initiate the plugin once first loaded, and on all subsequential loads if hot realoading is not implemented (see void plugin_retireve_state(void*)). It takes a pointer to the Lengine environment in case the plugin wants to internally manipulate it or use its channel.
+        Used to initiate the plugin once first loaded, and on all subsequential loads if hot realoading is not implemented (see void plugin_retireve_state(void*)). It takes a pointer to the Lengine environment (Env) in case the plugin wants to internally manipulate it or use its channel.
       bool plugin_update(Plugin*):\n"
-        The method to be called every frame that the plugin is active, it takes a pointer to its own Plugin object (see Plugin). This method should also return 0 if the plugin is to be closed or 1 other wise. If you wish to hot reload, write the state of your plugin to the passed Plugin object's state to save it and use the void (*overwrite_plugin)(Plugin*, const char*) callback method of the Env object to overwrite the current plugin with the object file at the passed path. Be wary that Lengine does not free any memory dynamically allocated by the plugin, not even if it's on its Plugin object's state, you should handle that on the plugin_retrieve_state method and when terminally closing the plugin.
-    The Plugin May Contain The Follwing Method (For Hot Reloading):
+        The method to be called every frame that the plugin is active, it takes a pointer to its own Plugin object (see Plugin). This method should also return 0 if the plugin is to be closed or 1 other wise. If you wish to hot reload, write the state of your plugin to the passed Plugin object's state to save it and use the void (*overwrite_plugin)(Plugin*, const char*) callback method of the Env object to overwrite the current plugin with the object file at the passed path, or at <path_to_plugin> if NULL is passed. Be wary that Lengine does not free any memory dynamically allocated by the plugin, not even if it's on its Plugin object's state, you should handle that on the plugin_retrieve_state method and when terminally closing the plugin.
+    The Plugin May Contain The Following Method (For Hot Reloading):
       void plugin_retrieve_state(void*):
-        Used for hot reloading, if a plugin doesn't want/need hot reloading simply don't define this method in it (in which case the Lengine aplication will simply start the plugin using plugin_init). This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve its previous state from before closing when the environment's int overwrite_plugin(Plugin*, const char*) method is called. The state that is passed to this function is the one in the Plugin object's state.
+        Used for hot reloading, if a plugin doesn't want/need hot reloading simply don't define this method in it (in which case the Lengine aplication will simply start the plugin using plugin_init). This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve its previous state from before closing when the environment's void overwrite_plugin(Plugin*, const char*) method is called. The state that is passed to this function is the one in the Plugin object's state.
 
   Plugins:
 
-  plugin.c aka simple:
-    just for showcase, an example plugin that just draws a rectangle on screen, if you click somewhere on screen it will move there.
+  test.c:
+    for testing purposes
 
   map_designer:
     a plugin that allows for tile map design.
