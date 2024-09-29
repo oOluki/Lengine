@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libtest_plugin.so -o libtest_plugin.so CMakeFiles/test_plugin.dir/plugins/test.c.o
