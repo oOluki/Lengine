@@ -45,10 +45,11 @@ void* load_object_file(const char* path){
 #include <stdlib.h>
 #include <string.h>
 
+static LE_HANDLE* loaded_handles = NULL;
+static size_t handle_cap = 0;
+static size_t loaded_handles_count = 0;
+
 void* load_object_file(const char* path){
-    static LE_HANDLE* loaded_handles = NULL;
-    static size_t handle_cap = 0;
-    static size_t loaded_handles_count = 0;
 
     if(loaded_handles_count == handle_cap){
         LE_HANDLE* dummy = loaded_handles;
@@ -64,8 +65,6 @@ void* load_object_file(const char* path){
 }
 
 void* get_sym(void* handle, const char* symbol_name){
-    static LE_HANDLE* loaded_handles = NULL;
-    static size_t loaded_handles_count = 0;
 
     const size_t d = (size_t)((LE_HANDLE*)handle - loaded_handles);
     if(d >= loaded_handles_count){
@@ -77,9 +76,6 @@ void* get_sym(void* handle, const char* symbol_name){
 }
 
 int close_object_file(void* handle){
-    static LE_HANDLE* loaded_handles = NULL;
-    static size_t handle_cap = 0;
-    static size_t loaded_handles_count = 0;
 
     const size_t d = (size_t)((LE_HANDLE*)handle - loaded_handles);
     if(d >= loaded_handles_count){

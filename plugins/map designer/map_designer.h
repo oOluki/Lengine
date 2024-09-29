@@ -2,7 +2,7 @@
 #define LE_MAPDESIGNER
 
 #include "funcs.h"
-#include "../../src/plugins.h"
+#include "../src/environment.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
