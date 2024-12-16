@@ -28,7 +28,7 @@ SOFTWARE.
 
 #define LE_BUILDING_DLL 1
 
-#include "../src/environment.h"
+#include "Lenv.h"
 
 #include <SDL2/SDL.h>
 

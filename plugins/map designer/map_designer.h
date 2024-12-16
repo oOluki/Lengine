@@ -29,7 +29,7 @@ SOFTWARE.
 #define LE_BUILDING_DLL 1
 
 #include "funcs.h"
-#include "../../src/environment.h"
+#include "Lenv.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -275,7 +275,7 @@ static inline void clean_memory(){
     TTF_CloseFont(map_designer.font);
     map_designer.font = NULL;
     void* subsystem = map_designer.env->channel.channel;
-    void(*close_subsystem)() = map_designer.env->get_object_from_symbol(subsystem, "close");
+    void(*close_subsystem)() = map_designer.env->get_symbol_from_object(subsystem, "close");
     close_subsystem();
 }
 
