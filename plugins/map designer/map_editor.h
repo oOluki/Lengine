@@ -199,11 +199,16 @@ static inline bool handle_map_events(Plugin* plugin){
                 map_designer.scrolly = 0;
                 map_designer.zoom = 1.0f;
                 break;
-            case SDLK_v:
-                printf("%i\n", map_designer.map[0]);
+            case SDLK_c:
                 if(map_designer.flags & MDF_SELECTION_ACTIVE){
-                    size_t sl2_pos = map_designer.selection2.x;
-                    sl2_pos += (int)(map_designer.selection2.y) * map_designer.map_sizex;
+                    map_designer.flags |= MDF_SELECTION2_ACTIVE;
+                    map_designer.selection2 = map_designer.selection;
+                }
+                break;
+            case SDLK_v:
+                if(map_designer.flags & MDF_SELECTION_ACTIVE){
+                    const size_t sl2_pos = map_designer.selection2.x
+                    + (int)(map_designer.selection2.y) * map_designer.map_sizex;
 
                     int __reachx = map_designer.selection2.w;
                     __reachx = __reachx < map_designer.selection.w?
