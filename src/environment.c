@@ -152,8 +152,8 @@ If You Got This Error In One Of This OS It Means Lengine Has Internal Problems.
 #include "environment.h"
 
 
-char* new_path = NULL;
-Plugin* reload_request = NULL;
+static char* new_path = NULL;
+static Plugin* reload_request = NULL;
 
 int load_plugin(Plugin* plugin, const char* path){
 
@@ -163,7 +163,7 @@ int load_plugin(Plugin* plugin, const char* path){
     #if defined(__linux__) || defined(__APPLE__)
 
     if(!handle){
-        printf("[ERROR] %s\n", dlerror());
+        fprintf(stderr, "[ERROR] %s\n", dlerror());
         return 0;
     }
 
@@ -171,14 +171,14 @@ int load_plugin(Plugin* plugin, const char* path){
 
     plugin->init = LE_GETSYM(handle, "plugin_init");
     if(!plugin->init){
-        printf("[ERROR] Missing Symbol \'plugin_init\' In Plugin \'%s\'.\n"
+        fprintf(stderr, "[ERROR] Missing Symbol \'plugin_init\' In Plugin \'%s\'.\n"
         "All Plugins Should Define A Method \'void plugin_init(Env*)\'.\n", path);
         LE_CLOSELIB(handle);
         return 0;
     }
     plugin->update = LE_GETSYM(handle, "plugin_update");
     if(!plugin->update){
-        printf("[ERROR] Missing Symbol \'plugin_update\' In Plugin \'%s\'.\n"
+        fprintf(stderr, "[ERROR] Missing Symbol \'plugin_update\' In Plugin \'%s\'.\n"
         "All Plugins Should Define A Method \'bool plugin_update()\'.\n", path);
         plugin->init = NULL;
         LE_CLOSELIB(handle);
@@ -186,7 +186,7 @@ int load_plugin(Plugin* plugin, const char* path){
     }
     plugin->retrieve_state = (void(*)(void*))LE_GETSYM(handle, "plugin_retrieve_state");
     if(!plugin->retrieve_state){
-        printf("[WARNING] No Symbol \'plugin_retrieve_state\' In Plugin \'%s\'.\n"
+        fprintf(stderr, "[WARNING] No Symbol \'plugin_retrieve_state\' In Plugin \'%s\'.\n"
         "Plugins Can't Hot Reload Withod A Method \'void plugin_retrieve_state(void*)\'.\n", path);
     }
     plugin->handle = handle;

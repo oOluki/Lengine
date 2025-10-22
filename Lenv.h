@@ -47,25 +47,25 @@ typedef struct Channel{
 } Channel;
 
 
-typedef struct{
+typedef struct Env{
     // shared plugin channel
     Channel  channel;
 
     // callback method to load dynamic object files (dlls/shared objects)
-    void*    (*load_object_file)(const char*);
+    void*    (*load_object_file)(const char* dynamic_object_path);
 
     // callback method to get methods/symbols from dynamic object file (dlls/shared objects)
-    void*    (*get_symbol_from_object)(void*, const char*);
+    void*    (*get_symbol_from_object)(void* handle, const char* symbol_name);
 
     // callback method to close the dynamic object file (dlls/shared object)
-    int      (*close_object_file)(void*);
+    int      (*close_object_file)(void* handle);
 
-    int      (*load_plugin)(Plugin*, const char*);
-    void     (*unload_plugin)(Plugin*);
+    int      (*load_plugin)(Plugin* plugin, const char* path_to_plugin_obj_file);
+    void     (*unload_plugin)(Plugin* plugin);
     // overwrites the passed plugin with the object file at the passed path
     // pass NULL to the file path (const char*) argument to reload the plugin by
     // the object file at the main plugin (the first loaded plugin) path
-    void     (*overwrite_plugin)(Plugin*, const char*);
+    void     (*overwrite_plugin)(Plugin* plugin, const char* path_to_new_plugin_obj_file);
 } Env;
 
 
@@ -111,7 +111,7 @@ extern LE_PLUGIN_EXPORT void LE_PLUGIN_CALL plugin_init(Env* env);
 // This function (if defined by the plugin) will be called for reopening the plugin, so it can retrieve
 // its previos state from before closing.
 // \param plugin_state the state of the plugin before reloading (see plugin_close())
-extern LE_PLUGIN_EXPORT void LE_PLUGIN_CALL plugin_retrive_state(void* plugin_state);
+extern LE_PLUGIN_EXPORT void LE_PLUGIN_CALL plugin_retrieve_state(void* plugin_state);
 
 /*
 * The method to be called every frame that the plugin is active.

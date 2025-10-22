@@ -73,8 +73,8 @@ int main(int argc, char** argv){
         print_help_message();
         return EXIT_SUCCESS;
     } else if(argc > 3){
-        printf("[ERROR] Too Many Arguments, Expected 1 Or 2 Got %u Instead\n", argc - 1);
-        printf("[HELP] To Display A Help Message Do: ./Lengine or ./Lengine --help\n");
+        fprintf(stderr, "[ERROR] Too Many Arguments, Expected 1 Or 2 Got %u Instead\n", argc - 1);
+        fprintf(stderr, "[HELP] To Display A Help Message Do: ./Lengine or ./Lengine --help\n");
         return EXIT_FAILURE;
     }
     
@@ -100,7 +100,8 @@ int main(int argc, char** argv){
     if(argc == 3){
         void* subsystem = LE_OPENLIB(argv[2]);
         if(!subsystem){
-            printf(
+            fprintf(
+                stderr,
                 "[WARNING] Unable To Load Subsystem"
                 #ifdef LE_UNIX_LINUX_MACOS
                 ", %s\n", dlerror()
@@ -110,7 +111,7 @@ int main(int argc, char** argv){
             );
         } else{
             printf("[INFO] Loaded Requested Subsystem At '%s' To Handle At %p (Present In The Shared Channel)\n", argv[2], subsystem);
-            env.channel = (Channel){.channel = subsystem, .size = 1, .active = true};
+            env.channel = (Channel){.channel = subsystem, .size = (int) sizeof(subsystem), .active = true};
         }
     }
 
@@ -118,8 +119,8 @@ int main(int argc, char** argv){
     plugin.environment = &env;
 
     if(!load_plugin(&plugin, path_to_plugin)){
-        printf("[ERROR] Unable To Load Plugin \'%s\'\n", path_to_plugin);
-        printf("[HELP] To Display A Help Message Do: ./Lengine or ./Lengine --help\n");
+        fprintf(stderr, "[ERROR] Unable To Load Plugin \'%s\'\n", path_to_plugin);
+        fprintf(stderr, "[HELP] To Display A Help Message Do: ./Lengine or ./Lengine --help\n");
         return EXIT_FAILURE;
     }
 
@@ -137,10 +138,10 @@ int main(int argc, char** argv){
 
             if(!load_plugin(reload_request, output_path)){
                 *reload_request = LE_EMPTY_PLUGIN;
-                printf("[WARNING] Unable To Overwrite Plugin With '%s'\n", output_path);
-                printf("[WARNING] Plugin At %p Holds Invalid Methods\n", reload_request);
+                fprintf(stderr, "[WARNING] Unable To Overwrite Plugin With '%s'\n", output_path);
+                fprintf(stderr, "[WARNING] Plugin At %p Holds Invalid Methods\n", reload_request);
                 if(reload_request == &plugin){
-                    printf("[ERROR] Fatal Error Main Plugin Compromised\n");
+                    fprintf(stderr, "[ERROR] Fatal Error Main Plugin Compromised\n");
                     return EXIT_FAILURE;
                 }
                 reload_request = NULL;
@@ -153,7 +154,7 @@ int main(int argc, char** argv){
             if(reload_request->retrieve_state){
                 reload_request->retrieve_state(reload_request->state);
             } else{
-                printf("[WARNING] Attempt To Reload Plugin, '%s', With No void plugin_retrieve_state(void*) Definition, "
+                fprintf(stderr, "[WARNING] Attempt To Reload Plugin, '%s', With No void plugin_retrieve_state(void*) Definition, "
                 "Reinitialization Will Take Place Instead\n", output_path);
                 ((void(*)(Env*))reload_request->init)((Env*)reload_request->environment);
             }
